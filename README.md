@@ -13,7 +13,8 @@ HTML at build time, with no WASM and no hydration.
 | `pvas-web-components` | `Crates/components/` | Document, nav, footer: Yeti's markup as Dioxus components |
 | `pvas-web-assets` | `Crates/assets/` | The Yeti build, embedded with `include_bytes!` |
 | `pvas-web-site` | `Crates/site/` | `Site` + `write`, the `build`/`serve` command line, the local preview server |
-| `pvas-web-docs` | `Crates/docs/` | The DocGen manifest model (schema 1); the docs renderer grows here |
+| `pvas-web-docs` | `Crates/docs/` | Product documentation: the DocGen manifest model, markdown (comrak, syntect highlighting), the docs layout, reference and concept pages, the link check |
+| `pvas-docs` | `Crates/docs-cli/` | Binary: builds or previews a product docs site from its `docs.toml` |
 
 ## Using it from a site
 
@@ -28,6 +29,23 @@ pvas-web-shared = { git = "https://github.com/Private-Asylum/pvas-web-shared", r
 A site's binary is then a few lines: render its pages, collect them with its
 own static files into a `Site`, and hand that to `pvas_web_shared::site::run`,
 which provides `build [--out <dir>]` and `serve [--out <dir>] [--port <port>]`.
+
+## Product documentation sites
+
+A product's docs repository holds only content: `docs.toml` (see the
+`config` module of `pvas-web-docs` for every key), `content/*.md`, the
+PVAS-DocGen `manifest.json` and an optional `styles/theme.css`. Run from that
+repository:
+
+```bash
+cargo run --release --manifest-path <path-to>/pvas-web-shared/Cargo.toml -p pvas-docs -- [serve]
+```
+
+It renders the landing page, the hand-written pages, concept and reference
+pages from the manifest, and a not-found page; checks every internal link and
+anchor (a broken one fails the build); and leaves search to Pagefind, run over
+the output afterwards (`npx pagefind --site public`). Every page's bar carries
+Pagefind's search trigger, which does nothing until the index exists.
 
 ## Yeti
 

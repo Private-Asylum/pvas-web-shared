@@ -1,0 +1,119 @@
+/* Documentation layout details Yeti leaves to the site. Unlayered on purpose,
+   so these win over Yeti's cascade layers without specificity fights. Colors
+   and sizes come from Yeti's tokens, so a product's theme.css restyles all of
+   it. Code highlighting colors are appended to this file at build time. */
+
+/* The sidebar: groups as disclosures, links as a quiet list. */
+.pa-docs-nav details > summary {
+	cursor: pointer;
+	font-weight: var(--yeti-weight-strong);
+	padding-block: calc(var(--yeti-space-xs) / 2);
+}
+
+.pa-docs-nav ul {
+	margin: 0;
+	padding-inline-start: var(--yeti-space-sm);
+	list-style: none;
+}
+
+.pa-docs-nav li a {
+	display: block;
+	padding-block: 0.15em;
+	color: var(--yeti-color-text-muted);
+	text-decoration: none;
+	font-size: var(--yeti-text-sm);
+	overflow-wrap: anywhere;
+}
+
+.pa-docs-nav li a:hover,
+.pa-docs-nav li a[aria-current="page"] {
+	color: var(--yeti-color-primary-text);
+}
+
+.pa-docs-nav li a[aria-current="page"] {
+	font-weight: var(--yeti-weight-strong);
+}
+
+.pa-docs-nav-section {
+	margin: var(--yeti-space-xs) 0 0;
+	padding-inline-start: var(--yeti-space-sm);
+	font-size: var(--yeti-text-xs);
+	font-weight: var(--yeti-weight-strong);
+	text-transform: uppercase;
+	letter-spacing: 0.06em;
+	color: var(--yeti-color-text-muted);
+}
+
+/* The table of contents. */
+.pa-docs-toc-title {
+	margin: 0 0 var(--yeti-space-xs);
+	font-size: var(--yeti-text-xs);
+	font-weight: var(--yeti-weight-strong);
+	text-transform: uppercase;
+	letter-spacing: 0.06em;
+	color: var(--yeti-color-text-muted);
+}
+
+.pa-docs-toc-sub {
+	padding-inline-start: var(--yeti-space-sm);
+}
+
+/* The article. */
+.pa-docs-article {
+	min-inline-size: 0;
+}
+
+.pa-docs-article h2 {
+	margin-block-start: var(--yeti-space-xl);
+}
+
+.pa-docs-relations {
+	display: grid;
+	grid-template-columns: max-content 1fr;
+	gap: calc(var(--yeti-space-xs) / 2) var(--yeti-space-md);
+}
+
+.pa-docs-relations dt {
+	font-weight: var(--yeti-weight-strong);
+}
+
+.pa-docs-relations dd {
+	margin: 0;
+}
+
+.pa-docs-source,
+.pa-docs-meta {
+	color: var(--yeti-color-text-muted);
+}
+
+.pa-docs-meta {
+	border-block-start: var(--yeti-border-width) solid var(--yeti-color-border, currentColor);
+	padding-block-start: var(--yeti-space-md);
+}
+
+/* Highlighted code: syntect writes the colors; this is the box around them. */
+pre.syntax-highlighting {
+	padding: var(--yeti-space-sm) var(--yeti-space-md);
+	border-radius: var(--yeti-radius-md);
+	overflow-x: auto;
+	font-size: var(--yeti-text-sm);
+}
+
+/* Landing page. */
+.pa-docs-eyebrow {
+	margin: 0;
+	font-size: var(--yeti-text-sm);
+	font-weight: var(--yeti-weight-strong);
+	text-transform: uppercase;
+	letter-spacing: 0.12em;
+	color: var(--yeti-color-primary-text);
+}
+
+a.pa-docs-card {
+	color: inherit;
+	text-decoration: none;
+}
+
+a.pa-docs-card:hover h2 {
+	color: var(--yeti-color-primary-text);
+}

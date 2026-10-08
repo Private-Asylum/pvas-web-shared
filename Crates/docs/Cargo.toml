@@ -16,9 +16,25 @@ path = "docs.rs"
 name = "manifest"
 path = "tests/manifest/manifest.rs"
 
+[[test]]
+name = "markdown"
+path = "tests/markdown/markdown.rs"
+
+[[test]]
+name = "site"
+path = "tests/site/site.rs"
+
 [dependencies]
+comrak.workspace = true
+dioxus.workspace = true
+dioxus-ssr.workspace = true
+pvas-web-assets.workspace = true
+pvas-web-components.workspace = true
+pvas-web-site.workspace = true
 serde.workspace = true
 serde_json.workspace = true
+syntect.workspace = true
+toml.workspace = true
 
 [lints]
 workspace = true

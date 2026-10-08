@@ -22,7 +22,7 @@ impl NavLink {
 }
 
 /// What the site bar shows.
-#[derive(Props, Clone, Debug, PartialEq, Eq)]
+#[derive(Props, Clone, Debug, PartialEq)]
 pub struct NavProps {
     /// The site's name, linking home. Always visible, also on a phone.
     brand: NavLink,
@@ -30,6 +30,8 @@ pub struct NavProps {
     links: Vec<NavLink>,
     /// An optional call to action, shown as a small button at the end of the bar.
     action: Option<NavLink>,
+    /// Anything else for the end of the bar, after the call to action: a search trigger, say.
+    extra_actions: Option<Element>,
 }
 
 /// The site bar.
@@ -42,6 +44,7 @@ pub fn Nav(props: NavProps) -> Element {
         brand,
         links,
         action,
+        extra_actions,
     } = props;
     rsx! {
         nav {
@@ -77,9 +80,12 @@ pub fn Nav(props: NavProps) -> Element {
                     li { a { href: "{link.href}", "{link.label}" } }
                 }
             }
-            if let Some(action) = action {
+            if action.is_some() || extra_actions.is_some() {
                 div { "data-actions": "",
-                    a { class: "button", href: "{action.href}", "data-size": "sm", "{action.label}" }
+                    if let Some(action) = action {
+                        a { class: "button", href: "{action.href}", "data-size": "sm", "{action.label}" }
+                    }
+                    {extra_actions}
                 }
             }
         }

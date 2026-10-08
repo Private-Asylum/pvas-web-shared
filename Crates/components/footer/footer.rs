@@ -21,9 +21,11 @@ pub fn Footer(props: FooterProps) -> Element {
         footer { class: "box", "data-surface": "raised",
             div { class: "cluster", "data-justify": "between",
                 small { "{copyright}" }
-                div { class: "cluster", "data-gap": "md",
-                    for link in links.iter() {
-                        a { href: "{link.href}", "{link.label}" }
+                if !links.is_empty() {
+                    div { class: "cluster", "data-gap": "md",
+                        for link in links.iter() {
+                            a { href: "{link.href}", "{link.label}" }
+                        }
                     }
                 }
             }

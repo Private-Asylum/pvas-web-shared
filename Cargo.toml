@@ -11,6 +11,8 @@ members = [
     "Crates/site",
     # Product documentation: the PVAS-DocGen manifest model, and the docs renderer.
     "Crates/docs",
+    # The `pvas-docs` binary: builds and previews a product documentation site from its docs.toml.
+    "Crates/docs-cli",
 ]
 
 [workspace.package]
@@ -34,6 +36,12 @@ dioxus-ssr = "0.7.10"
 
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
+toml = "1.1"
+
+# Markdown (GitHub-flavoured: tables, alerts, heading ids) with syntect highlighting through
+# pure-Rust regex, so nothing needs a C toolchain.
+comrak = { version = "0.56", default-features = false, features = ["syntect-fancy"] }
+syntect = { version = "5.3", default-features = false, features = ["default-fancy"] }
 
 # Local preview server for `serve`. Never part of what deploys.
 tiny_http = "0.12.0"
