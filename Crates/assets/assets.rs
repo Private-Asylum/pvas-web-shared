@@ -103,3 +103,8 @@ pub const HOUSE: &[Asset] = house![
 /// The house stylesheet, relative to the site root. Load it after [`YETI_STYLESHEET`] and before
 /// the site's own theme, which sets the hues.
 pub const HOUSE_STYLESHEET: &str = "vendor/pvas/house.css";
+
+/// The stylesheets every Private Asylum page loads first, in order, relative to the site root:
+/// Yeti, then the house style. A site's own sheets (its `theme.css` with its hues, then its rules)
+/// follow them.
+pub const HOUSE_STYLESHEETS: [&str; 2] = [YETI_STYLESHEET, HOUSE_STYLESHEET];

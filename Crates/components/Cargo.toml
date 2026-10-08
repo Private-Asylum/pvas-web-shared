@@ -12,6 +12,10 @@ publish.workspace = true
 crate-type = ["rlib"]
 path = "components.rs"
 
+[[test]]
+name = "components"
+path = "tests/components/components.rs"
+
 [dependencies]
 dioxus.workspace = true
 dioxus-ssr.workspace = true

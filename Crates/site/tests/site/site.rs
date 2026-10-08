@@ -17,9 +17,9 @@ fn out_dir(test: &str) -> io::Result<PathBuf> {
 }
 
 #[test]
-fn writes_pages_yeti_and_the_jekyll_marker() -> io::Result<()> {
+fn writes_pages_the_house_and_the_jekyll_marker() -> io::Result<()> {
     let out = out_dir("writes")?;
-    let mut site = Site::new().with_yeti();
+    let mut site = Site::new().with_house();
     site.add(SiteFile::page("index.html", "<!doctype html>".to_owned()));
     site.add(SiteFile::page(
         "docs/index.html",
@@ -32,6 +32,11 @@ fn writes_pages_yeti_and_the_jekyll_marker() -> io::Result<()> {
     assert!(out.join("docs/index.html").is_file());
     assert!(out.join("vendor/yeti/yeti.min.css").is_file());
     assert!(out.join("vendor/yeti/js/toc.js").is_file());
+    assert!(out.join("vendor/pvas/house.css").is_file());
+    assert!(
+        out.join("vendor/pvas/fonts/geist-mono-latin-wght-normal.woff2")
+            .is_file()
+    );
     assert!(out.join(".nojekyll").is_file());
     fs::remove_dir_all(&out)
 }

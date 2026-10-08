@@ -15,8 +15,8 @@ use std::process::Command;
 use dioxus::prelude::*;
 use serde::Deserialize;
 
-use pvas_web_assets::{HOUSE_STYLESHEET, YETI_MODULES, YETI_STYLESHEET};
-use pvas_web_components::NavLink;
+use pvas_web_assets::{HOUSE_STYLESHEETS, YETI_MODULES};
+use pvas_web_components::{Card, Intro, NavLink};
 use pvas_web_site::{Site, SiteFile};
 
 use crate::Manifest;
@@ -138,11 +138,7 @@ pub fn build_site(config_path: &Path) -> io::Result<Site> {
     rendered.push(("index.html".to_owned(), home(&loaded, &chrome)));
     rendered.push(("404.html".to_owned(), not_found(&loaded, &chrome)));
 
-    let mut site = Site::new()
-        .with_yeti()
-        .with_house()
-        .with_base(&base)
-        .with_search();
+    let mut site = Site::new().with_house().with_base(&base).with_search();
     site.add(SiteFile::page(
         "css/docs.css",
         format!("{DOCS_CSS}\n{}", highlight::STYLESHEET),
@@ -333,12 +329,16 @@ fn chrome(loaded: &LoadedConfig, sidebar: Vec<SideGroup>) -> io::Result<Chrome> 
             .map(|link| NavLink::new(link.label.clone(), loaded.href(&link.href))),
     );
 
-    let mut stylesheets = vec![
-        format!("{base}{YETI_STYLESHEET}"),
+    // The house first (Yeti, then the house style), then Pagefind's modal, the docs layout, and
+    // the product's own sheets, which set its hues.
+    let mut stylesheets: Vec<String> = HOUSE_STYLESHEETS
+        .iter()
+        .map(|sheet| format!("{base}{sheet}"))
+        .collect();
+    stylesheets.extend([
         format!("{base}pagefind/pagefind-component-ui.css"),
-        format!("{base}{HOUSE_STYLESHEET}"),
         format!("{base}css/docs.css"),
-    ];
+    ]);
     if let Some(styles) = &config.site.styles {
         let mut names: Vec<String> = fs::read_dir(loaded.resolve(styles))?
             .filter_map(Result::ok)
@@ -469,34 +469,32 @@ fn plain(title: &str, description: &str, path: &str) -> DocPage {
 fn home(loaded: &LoadedConfig, chrome: &Chrome) -> String {
     let home = &loaded.config.home;
     let site = &loaded.config.site;
+    let actions: Vec<NavLink> = home
+        .actions
+        .iter()
+        .map(|action| NavLink::new(action.label.clone(), loaded.href(&action.href)))
+        .collect();
     let main = rsx! {
         main { id: "content", class: "stack", "data-gap": "3xl",
-            section { class: "center", "aria-labelledby": "headline",
-                div { class: "stack", "data-gap": "md",
-                        // The eyebrow reads as the product's path (`~/gantry`); the headline ends
-                        // in the house cursor.
-                        p { class: "pa-docs-eyebrow", "{site.slug}" }
-                        h1 { id: "headline", class: "pa-cursor", "{home.headline}" }
-                        p { class: "lede", "{home.lede}" }
-                        div { class: "cluster", "data-gap": "sm",
-                            for (index, action) in home.actions.iter().enumerate() {
-                                a {
-                                    class: "button",
-                                    href: loaded.href(&action.href),
-                                    "data-emphasis": if index == 0 { "high" } else { "medium" },
-                                    "{action.label}"
-                                }
-                            }
-                        }
-                }
+            Intro {
+                eyebrow: site.slug.clone(),
+                headline: home.headline.clone(),
+                lede: home.lede.clone(),
+                actions,
             }
             if !home.cards.is_empty() {
-                section { class: "center", "aria-label": "Sections",
-                    div { class: "grid",
-                        for card in home.cards.iter() {
-                            a { class: "card pa-docs-card", href: loaded.href(&card.href),
-                                h2 { "{card.title}" }
-                                p { "{card.text}" }
+                // The cards are h3s, like every card; the section's own heading is for assistive
+                // technology only, so the outline stays h1, h2, h3.
+                section { class: "center", "aria-labelledby": "sections",
+                    div { class: "stack", "data-gap": "md",
+                        h2 { id: "sections", class: "visually-hidden", "Sections" }
+                        div { class: "grid",
+                            for card in home.cards.iter() {
+                                Card {
+                                    title: card.title.clone(),
+                                    text: card.text.clone(),
+                                    href: loaded.href(&card.href),
+                                }
                             }
                         }
                     }
@@ -510,12 +508,18 @@ fn home(loaded: &LoadedConfig, chrome: &Chrome) -> String {
 /// The page GitHub Pages serves for a missing path under the base.
 fn not_found(loaded: &LoadedConfig, chrome: &Chrome) -> String {
     let main = rsx! {
-        main { id: "content", class: "center stack", "data-max": "md", "data-gap": "md",
-            h1 { "Not found" }
-            p { "There is nothing at this address in the {loaded.config.site.title} documentation." }
-            div { class: "cluster", "data-gap": "sm",
-                a { class: "button", href: loaded.href("/"), "Documentation home" }
-                a { class: "button", "data-emphasis": "medium", href: loaded.href("/reference/"), "Reference" }
+        main { id: "content",
+            Intro {
+                eyebrow: "404",
+                headline: "Not found.",
+                lede: format!(
+                    "There is nothing at this address in the {} documentation.",
+                    loaded.config.site.title
+                ),
+                actions: vec![
+                    NavLink::new("Documentation home", loaded.href("/")),
+                    NavLink::new("Reference", loaded.href("/reference/")),
+                ],
             }
         }
     };

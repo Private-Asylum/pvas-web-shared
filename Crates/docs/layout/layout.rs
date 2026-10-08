@@ -232,7 +232,7 @@ impl Chrome {
                             }
                             // Only the article body is indexed for search; Pagefind reads its attributes
                             // from this plain wrapper, so no Yeti element carries a foreign attribute.
-                            div { class: "pa-docs-prose", "data-pagefind-body": "", dangerous_inner_html: "{page.html}" }
+                            div { class: "pa-prose pa-docs-prose", "data-pagefind-body": "", dangerous_inner_html: "{page.html}" }
                             footer { class: "stack pa-docs-meta", "data-gap": "sm",
                                 if previous.is_some() || next.is_some() {
                                 div { class: "cluster", "data-justify": "between",

@@ -123,17 +123,14 @@ impl Site {
         self.files.extend(files);
     }
 
-    /// Adds the embedded Yeti build, under `vendor/yeti/`.
-    #[must_use]
-    pub fn with_yeti(mut self) -> Self {
-        self.files.extend(YETI.iter().map(SiteFile::asset));
-        self
-    }
-
-    /// Adds the house style and its typeface, under `vendor/pvas/`.
+    /// Adds what every Private Asylum site is built on: the embedded Yeti build under
+    /// `vendor/yeti/`, and the house style with its typeface under `vendor/pvas/`. They ship
+    /// together, so no site has Yeti without the house look; pages link them with
+    /// [`HOUSE_STYLESHEETS`](pvas_web_assets::HOUSE_STYLESHEETS).
     #[must_use]
     pub fn with_house(mut self) -> Self {
-        self.files.extend(HOUSE.iter().map(SiteFile::asset));
+        self.files
+            .extend(YETI.iter().chain(HOUSE).map(SiteFile::asset));
         self
     }
 

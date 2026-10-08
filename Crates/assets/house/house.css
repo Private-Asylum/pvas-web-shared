@@ -230,6 +230,11 @@
 	translate: 0 1px;
 }
 
+/* Card titles share one size, linked or not. */
+.card :is(h2, h3) {
+	font-size: var(--yeti-text-lg);
+}
+
 /* Cards light their border on hover, in the phosphor. */
 .card {
 	transition: border-color var(--yeti-duration-fast) ease, background-color var(--yeti-duration-fast) ease;
@@ -245,6 +250,100 @@ body > footer {
 	border-block-start: var(--yeti-border-width) solid var(--yeti-color-border);
 	font-size: var(--yeti-text-sm);
 	color: var(--yeti-color-text-muted);
+}
+
+/* The house classes, beyond Yeti's own. The components in
+   pvas-web-components emit them; a site's own markup may too.
+
+   pa-prose    flowing text: Markdown output, an about section
+   pa-eyebrow  a path-like label above a headline, drawn as ~/label
+   pa-card     a card that is a link as a whole
+   pa-cursor   ends an element in the blinking block cursor */
+
+/* Prose. Yeti zeroes block margins and spaces things with stacks, but
+   flowing text (rendered Markdown above all) arrives as plain siblings, so
+   prose spaces them itself. :where keeps all of it weaker than any heading or
+   component rule. */
+.pa-prose :where(h1, h2, h3, h4, p, ul, ol, dl, pre, blockquote, table, hr, details, div)
+	+ :where(h1, h2, h3, h4, p, ul, ol, dl, pre, blockquote, table, hr, details, div) {
+	margin-block-start: var(--yeti-space-md);
+}
+
+.pa-prose :where(h3, h4) {
+	margin-block-start: var(--yeti-space-lg);
+}
+
+/* Lists keep their markers inside the column, lit in the phosphor. */
+.pa-prose :where(ul, ol) {
+	padding-inline-start: 3ch;
+}
+
+.pa-prose :where(li) + :where(li) {
+	margin-block-start: calc(var(--yeti-space-xs) / 2);
+}
+
+.pa-prose :where(li)::marker {
+	color: var(--yeti-color-primary-text);
+}
+
+/* Section headings carry their Markdown level, dimmed. Decoration: the
+   empty alternative text keeps assistive technology to the words. */
+.pa-prose h2::before {
+	content: "## " / "";
+}
+
+.pa-prose h3::before {
+	content: "### " / "";
+}
+
+.pa-prose :is(h2, h3)::before {
+	color: var(--yeti-color-primary-text);
+	opacity: 0.45;
+	font-weight: var(--yeti-weight-normal);
+}
+
+/* A card set inside prose is still a card: it keeps its own spacing (its
+   gap) and its titles carry no Markdown level. */
+.pa-prose .card > * + * {
+	margin-block-start: 0;
+}
+
+.pa-prose .card :is(h2, h3)::before {
+	content: none;
+}
+
+.pa-eyebrow {
+	margin: 0;
+	font-size: var(--yeti-text-sm);
+	color: var(--yeti-color-secondary-text);
+}
+
+.pa-eyebrow::before {
+	content: "~/" / "";
+	color: var(--yeti-color-text-muted);
+}
+
+/* A linked card reads as a command: its title ends in an arrow that steps
+   forward under the pointer. */
+a.pa-card {
+	color: inherit;
+	text-decoration: none;
+}
+
+a.pa-card :is(h2, h3)::after {
+	content: "→" / "";
+	display: inline-block;
+	margin-inline-start: 0.5ch;
+	color: var(--yeti-color-primary-text);
+	transition: translate var(--yeti-duration-fast) ease;
+}
+
+a.pa-card:hover :is(h2, h3) {
+	color: var(--yeti-color-primary-text);
+}
+
+a.pa-card:hover :is(h2, h3)::after {
+	translate: 0.25em 0;
 }
 
 /* A block cursor, for whatever a site wants to end in one. */

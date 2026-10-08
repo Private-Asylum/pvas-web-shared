@@ -10,7 +10,7 @@ HTML at build time, with no WASM and no hydration.
 | Crate | Folder | What it is |
 | --- | --- | --- |
 | `pvas-web-shared` | `Crates/pvas-web-shared/` | The facade: re-exports the four below as `components`, `assets`, `site`, `docs` |
-| `pvas-web-components` | `Crates/components/` | Document, nav, footer: Yeti's markup as Dioxus components |
+| `pvas-web-components` | `Crates/components/` | Document, nav, footer, intro, card: Yeti's markup in the house style, as Dioxus components |
 | `pvas-web-assets` | `Crates/assets/` | The Yeti build and the house style with its typeface, embedded with `include_bytes!` |
 | `pvas-web-site` | `Crates/site/` | `Site` + `write`, the `build`/`serve` command line, the Pagefind step, the local preview server |
 | `pvas-web-docs` | `Crates/docs/` | Product documentation: the DocGen manifest model, markdown (comrak, syntect highlighting), the docs layout, reference and concept pages, the link check |
@@ -56,9 +56,17 @@ lightly. One monospaced face, Geist Mono (self-hosted, OFL-1.1), a dark
 screen with a faint phosphor glow and dot grid, hairline borders and
 near-square corners. It is Yeti tokens and `yeti.theme` element rules, plus a
 few unlayered rules for what Yeti has no token for, and a `.pa-cursor` class
-for a blinking block cursor. A site adds it with `Site::with_house()` and links
-`HOUSE_STYLESHEET` after Yeti and before its own `theme.css`, which sets only
-the hues: `--yeti-hue-primary` is the phosphor.
+for a blinking block cursor. It is not optional: `Site::with_house()` is the
+only way a site gets Yeti, and it ships the house style beside it; pages link
+`HOUSE_STYLESHEETS` (Yeti, then the house) before the site's own `theme.css`,
+which sets only the hues: `--yeti-hue-primary` is the phosphor. A change to the
+look is made here and reaches every site.
+
+The shared components carry the house classes: `Intro` (a page's opening:
+`~/eyebrow`, the headline ending in the cursor, a lede, the actions) and `Card`
+(a whole-card link with an arrow, or a plain article with a badge), beside
+`Nav` and `Footer`. `pa-prose` spaces flowing text and marks its headings
+`##`/`###`.
 
 The typeface is vendored at a pinned Fontsource version:
 
