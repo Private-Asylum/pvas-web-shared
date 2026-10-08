@@ -74,3 +74,14 @@ fn refuses_paths_that_leave_the_folder() -> io::Result<()> {
     );
     Ok(())
 }
+
+#[test]
+fn normalizes_the_base_path() {
+    assert_eq!(Site::new().base(), "/");
+    assert_eq!(Site::default().base(), "/");
+    assert_eq!(Site::new().with_base("gantry").base(), "/gantry/");
+    assert_eq!(Site::new().with_base("/gantry/").base(), "/gantry/");
+    assert_eq!(Site::new().with_base("/").base(), "/");
+    assert!(!Site::new().search());
+    assert!(Site::new().with_search().search());
+}

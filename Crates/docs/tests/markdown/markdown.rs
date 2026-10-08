@@ -1,6 +1,6 @@
 //! Markdown rendering: ids, links, front matter, highlighting, alerts, escaping.
 
-use pvas_web_docs::highlight::stylesheet;
+use pvas_web_docs::highlight::STYLESHEET;
 use pvas_web_docs::markdown::Markdown;
 
 const PAGE: &str = r#"+++
@@ -82,9 +82,15 @@ fn alerts_render_and_raw_html_is_escaped() {
     assert!(!html.contains("<script>"), "raw HTML passed through");
 }
 
+/// Code is colored from the theme's tokens, never fixed colors, so a product's hues restyle it.
 #[test]
-fn stylesheet_has_a_dark_variant() {
-    let css = stylesheet().unwrap_or_default();
-    assert!(css.contains(".hl-"));
-    assert!(css.contains("prefers-color-scheme: dark"));
+fn stylesheet_colors_from_the_theme() {
+    for scope in [".hl-keyword", ".hl-string", ".hl-comment", ".hl-entity"] {
+        assert!(STYLESHEET.contains(scope), "no rule for {scope}");
+    }
+    assert!(STYLESHEET.contains("var(--yeti-color-primary-text)"));
+    assert!(
+        !STYLESHEET.contains('#'),
+        "a fixed color in the highlighting stylesheet"
+    );
 }

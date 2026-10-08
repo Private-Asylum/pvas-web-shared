@@ -41,7 +41,6 @@ toml = "1.1"
 # Markdown (GitHub-flavoured: tables, alerts, heading ids) with syntect highlighting through
 # pure-Rust regex, so nothing needs a C toolchain.
 comrak = { version = "0.56", default-features = false, features = ["syntect-fancy"] }
-syntect = { version = "5.3", default-features = false, features = ["default-fancy"] }
 
 # Local preview server for `serve`. Never part of what deploys.
 tiny_http = "0.12.0"

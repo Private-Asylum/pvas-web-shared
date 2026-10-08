@@ -139,11 +139,14 @@ impl Chrome {
                     links: self.nav.clone(),
                     action: None,
                     // Pagefind's search: a trigger in the bar (also Ctrl/Cmd+K) opening an
-                    // accessible modal. Its bundle is generated over the built site in CI; until
-                    // then these elements are undefined and render nothing.
+                    // accessible modal. The bundle is written by indexing the built site; without
+                    // it these elements are undefined and render nothing.
                     extra_actions: rsx! { pagefind-modal-trigger {} },
+                    threshold: Some("xl"),
                 }
-                pagefind-config { "bundle-path": "{self.search_bundle}" }
+                // `preload` fetches the index with the page, so a query typed the moment the
+                // modal opens is answered instead of being dropped while the index loads.
+                pagefind-config { "bundle-path": "{self.search_bundle}", preload: "" }
                 pagefind-modal {}
                 {main}
                 Footer { copyright: self.copyright.clone(), links: vec![] }
@@ -211,56 +214,59 @@ impl Chrome {
     pub fn render(&self, page: &DocPage) -> String {
         let (previous, next) = self.neighbours(&page.path);
         let main = rsx! {
-            div { class: "sidebar", "data-width": "sm", "data-gap": "xl",
-                div { "data-sticky": "", {self.sidebar(&page.path)} }
-                div { class: "sidebar", "data-side": "end", "data-width": "xs", "data-gap": "xl",
-                    main { id: "content", class: "stack pa-docs-article", "data-gap": "lg",
-                        if !page.crumbs.is_empty() {
-                            nav { class: "breadcrumbs", "aria-label": "Breadcrumb", "data-size": "sm",
-                                ol { role: "list",
-                                    for crumb in page.crumbs.iter() {
-                                        li { a { href: self.href(&crumb.path), "{crumb.title}" } }
+            // `center` gives the gutters on a narrow screen and caps the row on a wide one.
+            div { class: "center", "data-max": "2xl", "data-gap": "md",
+                div { class: "sidebar", "data-width": "xs", "data-gap": "lg",
+                    div { class: "pa-docs-side", "data-sticky": "", {self.sidebar(&page.path)} }
+                    div { class: "sidebar", "data-side": "end", "data-width": "xs", "data-gap": "lg",
+                        main { id: "content", class: "stack pa-docs-article", "data-gap": "lg",
+                            if !page.crumbs.is_empty() {
+                                nav { class: "breadcrumbs", "aria-label": "Breadcrumb", "data-size": "sm",
+                                    ol { role: "list",
+                                        for crumb in page.crumbs.iter() {
+                                            li { a { href: self.href(&crumb.path), "{crumb.title}" } }
+                                        }
+                                        li { "aria-current": "page", "{page.title}" }
                                     }
-                                    li { "aria-current": "page", "{page.title}" }
+                                }
+                            }
+                            // Only the article body is indexed for search; Pagefind reads its attributes
+                            // from this plain wrapper, so no Yeti element carries a foreign attribute.
+                            div { class: "pa-docs-prose", "data-pagefind-body": "", dangerous_inner_html: "{page.html}" }
+                            footer { class: "stack pa-docs-meta", "data-gap": "sm",
+                                if previous.is_some() || next.is_some() {
+                                div { class: "cluster", "data-justify": "between",
+                                    if let Some(previous) = previous {
+                                        a { class: "button", "data-emphasis": "low", rel: "prev", href: self.href(&previous.path),
+                                            "← {previous.title}"
+                                        }
+                                    } else {
+                                        span {}
+                                    }
+                                    if let Some(next) = next {
+                                        a { class: "button", "data-emphasis": "low", rel: "next", href: self.href(&next.path),
+                                            "{next.title} →"
+                                        }
+                                    }
+                                }
+                                }
+                                if page.provenance.is_some() || page.updated.is_some() || page.edit_url.is_some() {
+                                div { class: "cluster", "data-justify": "between",
+                                    if let Some(provenance) = &page.provenance {
+                                        small { "{provenance}" }
+                                    }
+                                    if let Some(updated) = &page.updated {
+                                        small { "Last updated {updated}" }
+                                    }
+                                    if let Some(edit) = &page.edit_url {
+                                        small { a { href: "{edit}", "Edit this page on GitHub" } }
+                                    }
+                                }
                                 }
                             }
                         }
-                        // Only the article body is indexed for search; Pagefind reads its attributes
-                        // from this plain wrapper, so no Yeti element carries a foreign attribute.
-                        div { class: "pa-docs-prose", "data-pagefind-body": "", dangerous_inner_html: "{page.html}" }
-                        footer { class: "stack pa-docs-meta", "data-gap": "sm",
-                            if previous.is_some() || next.is_some() {
-                            div { class: "cluster", "data-justify": "between",
-                                if let Some(previous) = previous {
-                                    a { class: "button", "data-emphasis": "low", rel: "prev", href: self.href(&previous.path),
-                                        "← {previous.title}"
-                                    }
-                                } else {
-                                    span {}
-                                }
-                                if let Some(next) = next {
-                                    a { class: "button", "data-emphasis": "low", rel: "next", href: self.href(&next.path),
-                                        "{next.title} →"
-                                    }
-                                }
-                            }
-                            }
-                            if page.provenance.is_some() || page.updated.is_some() || page.edit_url.is_some() {
-                            div { class: "cluster", "data-justify": "between",
-                                if let Some(provenance) = &page.provenance {
-                                    small { "{provenance}" }
-                                }
-                                if let Some(updated) = &page.updated {
-                                    small { "Last updated {updated}" }
-                                }
-                                if let Some(edit) = &page.edit_url {
-                                    small { a { href: "{edit}", "Edit this page on GitHub" } }
-                                }
-                            }
-                            }
-                        }
+                        div { class: "pa-docs-toc-column", "data-sticky": "", {Self::toc(page)} }
                     }
-                    div { "data-sticky": "", {Self::toc(page)} }
                 }
             }
         };

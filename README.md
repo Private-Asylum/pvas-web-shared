@@ -11,8 +11,8 @@ HTML at build time, with no WASM and no hydration.
 | --- | --- | --- |
 | `pvas-web-shared` | `Crates/pvas-web-shared/` | The facade: re-exports the four below as `components`, `assets`, `site`, `docs` |
 | `pvas-web-components` | `Crates/components/` | Document, nav, footer: Yeti's markup as Dioxus components |
-| `pvas-web-assets` | `Crates/assets/` | The Yeti build, embedded with `include_bytes!` |
-| `pvas-web-site` | `Crates/site/` | `Site` + `write`, the `build`/`serve` command line, the local preview server |
+| `pvas-web-assets` | `Crates/assets/` | The Yeti build and the house style with its typeface, embedded with `include_bytes!` |
+| `pvas-web-site` | `Crates/site/` | `Site` + `write`, the `build`/`serve` command line, the Pagefind step, the local preview server |
 | `pvas-web-docs` | `Crates/docs/` | Product documentation: the DocGen manifest model, markdown (comrak, syntect highlighting), the docs layout, reference and concept pages, the link check |
 | `pvas-docs` | `Crates/docs-cli/` | Binary: builds or previews a product docs site from its `docs.toml` |
 
@@ -29,6 +29,9 @@ pvas-web-shared = { git = "https://github.com/Private-Asylum/pvas-web-shared", r
 A site's binary is then a few lines: render its pages, collect them with its
 own static files into a `Site`, and hand that to `pvas_web_shared::site::run`,
 which provides `build [--out <dir>]` and `serve [--out <dir>] [--port <port>]`.
+`serve` previews the site under its base path (`Site::with_base`), as Pages
+serves it. A site built `with_search` is indexed by Pagefind after writing,
+through `npx` at the version pinned in `PAGEFIND_VERSION`.
 
 ## Product documentation sites
 
@@ -43,9 +46,28 @@ cargo run --release --manifest-path <path-to>/pvas-web-shared/Cargo.toml -p pvas
 
 It renders the landing page, the hand-written pages, concept and reference
 pages from the manifest, and a not-found page; checks every internal link and
-anchor (a broken one fails the build); and leaves search to Pagefind, run over
-the output afterwards (`npx pagefind --site public`). Every page's bar carries
-Pagefind's search trigger, which does nothing until the index exists.
+anchor (a broken one fails the build); and indexes the output with Pagefind,
+whose search trigger sits in every page's bar. Node must be installed.
+
+## House style
+
+`Crates/assets/house/house.css` is the Private Asylum look: a terminal,
+lightly. One monospaced face, Geist Mono (self-hosted, OFL-1.1), a dark
+screen with a faint phosphor glow and dot grid, hairline borders and
+near-square corners. It is Yeti tokens and `yeti.theme` element rules, plus a
+few unlayered rules for what Yeti has no token for, and a `.pa-cursor` class
+for a blinking block cursor. A site adds it with `Site::with_house()` and links
+`HOUSE_STYLESHEET` after Yeti and before its own `theme.css`, which sets only
+the hues: `--yeti-hue-primary` is the phosphor.
+
+The typeface is vendored at a pinned Fontsource version:
+
+```bash
+scripts/update-fonts.sh <version>
+```
+
+`vendor/fonts/geist-mono/VENDORED` records the version. A test fails if the
+stylesheet and the embedded fonts disagree.
 
 ## Yeti
 

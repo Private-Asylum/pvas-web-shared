@@ -15,7 +15,7 @@ use std::process::Command;
 use dioxus::prelude::*;
 use serde::Deserialize;
 
-use pvas_web_assets::{YETI_MODULES, YETI_STYLESHEET};
+use pvas_web_assets::{HOUSE_STYLESHEET, YETI_MODULES, YETI_STYLESHEET};
 use pvas_web_components::NavLink;
 use pvas_web_site::{Site, SiteFile};
 
@@ -107,7 +107,8 @@ fn invalid(message: String) -> io::Error {
     io::Error::new(io::ErrorKind::InvalidData, message)
 }
 
-/// Builds the whole site described by the `docs.toml` at `config_path`.
+/// Builds the whole site described by the `docs.toml` at `config_path`, served under `/<slug>/`
+/// and asking for a search index.
 ///
 /// # Errors
 ///
@@ -137,11 +138,14 @@ pub fn build_site(config_path: &Path) -> io::Result<Site> {
     rendered.push(("index.html".to_owned(), home(&loaded, &chrome)));
     rendered.push(("404.html".to_owned(), not_found(&loaded, &chrome)));
 
-    let mut site = Site::new().with_yeti();
-    let highlighting = highlight::stylesheet().map_err(invalid)?;
+    let mut site = Site::new()
+        .with_yeti()
+        .with_house()
+        .with_base(&base)
+        .with_search();
     site.add(SiteFile::page(
         "css/docs.css",
-        format!("{DOCS_CSS}\n{highlighting}"),
+        format!("{DOCS_CSS}\n{}", highlight::STYLESHEET),
     ));
     if let Some(styles) = &config.site.styles {
         site.extend(SiteFile::dir(&loaded.resolve(styles), "css")?);
@@ -332,6 +336,7 @@ fn chrome(loaded: &LoadedConfig, sidebar: Vec<SideGroup>) -> io::Result<Chrome> 
     let mut stylesheets = vec![
         format!("{base}{YETI_STYLESHEET}"),
         format!("{base}pagefind/pagefind-component-ui.css"),
+        format!("{base}{HOUSE_STYLESHEET}"),
         format!("{base}css/docs.css"),
     ];
     if let Some(styles) = &config.site.styles {
@@ -468,8 +473,10 @@ fn home(loaded: &LoadedConfig, chrome: &Chrome) -> String {
         main { id: "content", class: "stack", "data-gap": "3xl",
             section { class: "center", "aria-labelledby": "headline",
                 div { class: "stack", "data-gap": "md",
-                        p { class: "pa-docs-eyebrow", "{site.title}" }
-                        h1 { id: "headline", "{home.headline}" }
+                        // The eyebrow reads as the product's path (`~/gantry`); the headline ends
+                        // in the house cursor.
+                        p { class: "pa-docs-eyebrow", "{site.slug}" }
+                        h1 { id: "headline", class: "pa-cursor", "{home.headline}" }
                         p { class: "lede", "{home.lede}" }
                         div { class: "cluster", "data-gap": "sm",
                             for (index, action) in home.actions.iter().enumerate() {

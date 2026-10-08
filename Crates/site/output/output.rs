@@ -5,7 +5,7 @@ use std::fs;
 use std::io;
 use std::path::{Component, Path};
 
-use pvas_web_assets::{Asset, YETI};
+use pvas_web_assets::{Asset, HOUSE, YETI};
 
 /// One file of a site: a rendered page or a static file.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -66,18 +66,51 @@ impl SiteFile {
     }
 }
 
-/// Everything a site publishes.
-#[derive(Debug, Default, Clone, PartialEq, Eq)]
+/// Everything a site publishes, and where it is published.
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Site {
     /// The files, in the order they were added.
     files: Vec<SiteFile>,
+    /// The path the site is served under: `/` for the org site, `/gantry/` for a project site.
+    base: Cow<'static, str>,
+    /// Whether [`run`](crate::run) builds a Pagefind index over the written folder.
+    search: bool,
+}
+
+impl Default for Site {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl Site {
-    /// An empty site.
+    /// An empty site, served at `/`, without search.
     #[must_use]
     pub const fn new() -> Self {
-        Self { files: Vec::new() }
+        Self {
+            files: Vec::new(),
+            base: Cow::Borrowed("/"),
+            search: false,
+        }
+    }
+
+    /// Serves the site under `base` (`/gantry/`). Slashes are added at either end when missing.
+    #[must_use]
+    pub fn with_base(mut self, base: &str) -> Self {
+        let trimmed = base.trim_matches('/');
+        self.base = if trimmed.is_empty() {
+            Cow::Borrowed("/")
+        } else {
+            Cow::Owned(format!("/{trimmed}/"))
+        };
+        self
+    }
+
+    /// Asks [`run`](crate::run) to index the written folder with Pagefind.
+    #[must_use]
+    pub const fn with_search(mut self) -> Self {
+        self.search = true;
+        self
     }
 
     /// Adds one file.
@@ -97,10 +130,29 @@ impl Site {
         self
     }
 
+    /// Adds the house style and its typeface, under `vendor/pvas/`.
+    #[must_use]
+    pub fn with_house(mut self) -> Self {
+        self.files.extend(HOUSE.iter().map(SiteFile::asset));
+        self
+    }
+
     /// The files added so far.
     #[must_use]
     pub fn files(&self) -> &[SiteFile] {
         &self.files
+    }
+
+    /// The path the site is served under, with a slash at either end.
+    #[must_use]
+    pub fn base(&self) -> &str {
+        &self.base
+    }
+
+    /// Whether the site wants a Pagefind index.
+    #[must_use]
+    pub const fn search(&self) -> bool {
+        self.search
     }
 }
 

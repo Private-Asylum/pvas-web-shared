@@ -221,17 +221,21 @@ impl<'a> Reference<'a> {
             .collect();
 
         let element = rsx! {
-            h1 { id: "{title_id}", "{entry.id}" }
-            div { class: "cluster", "data-gap": "xs",
-                for badge in badges.iter() {
-                    span { class: "badge", "data-variant": "neutral", "{badge}" }
-                }
-                if !entry.display_name.is_empty() {
-                    span { class: "badge", "data-emphasis": "low", "shown as “{entry.display_name}”" }
+            h1 { id: "{title_id}", class: "pa-docs-symbol", "{entry.id}" }
+            // The badges and the include line are labels, not prose: kept out of the search
+            // index, whose excerpts would otherwise run them together ("ClassGantryCoreC++ only").
+            div { "data-pagefind-ignore": "",
+                div { class: "cluster", "data-gap": "xs",
+                    for badge in badges.iter() {
+                        span { class: "badge", "data-variant": "neutral", "{badge}" }
+                    }
+                    if !entry.display_name.is_empty() {
+                        span { class: "badge", "data-emphasis": "low", "shown as “{entry.display_name}”" }
+                    }
                 }
             }
             if let Some(include) = include {
-                div { dangerous_inner_html: "{include}" }
+                div { "data-pagefind-ignore": "", dangerous_inner_html: "{include}" }
             }
             div { dangerous_inner_html: "{self.prose(&entry.summary)}" }
             div { dangerous_inner_html: "{self.prose(&entry.description)}" }
@@ -539,7 +543,7 @@ impl<'a> Reference<'a> {
             .collect();
 
         let element = rsx! {
-            h1 { id: "{title_id}", "{concept.title}" }
+            h1 { id: "{title_id}", class: "pa-docs-symbol", "{concept.title}" }
             p { class: "pa-docs-source", code { "{concept.header}" } }
             for (block, id) in concept.blocks.iter().zip(block_ids.iter()) {
                 if let (Some(id), Some(symbol)) = (id, block.symbol.as_ref()) {

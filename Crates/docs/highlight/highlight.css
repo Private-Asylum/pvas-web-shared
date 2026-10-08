@@ -1,0 +1,55 @@
+/* Highlighted code, colored from the theme's own hues: keywords glow in the
+   phosphor (primary), literals in the second accent, comments and punctuation
+   recede. A product's theme.css restyles its code by setting its hues. The
+   classes are syntect's scope names with the hl- prefix; a span carries every
+   part of its scope (hl-entity hl-name hl-function), so the rules match
+   combinations, most general first. */
+
+pre.syntax-highlighting {
+	color: var(--yeti-color-text);
+}
+
+.hl-comment {
+	color: var(--yeti-color-text-muted);
+	font-style: italic;
+}
+
+.hl-punctuation,
+.hl-keyword.hl-operator {
+	color: color-mix(in oklch, var(--yeti-color-text-muted) 80%, var(--yeti-color-text));
+}
+
+.hl-keyword,
+.hl-storage {
+	color: var(--yeti-color-primary-text);
+}
+
+.hl-entity.hl-name,
+.hl-support {
+	color: color-mix(in oklch, var(--yeti-color-primary-text) 45%, var(--yeti-color-text));
+}
+
+.hl-entity.hl-name.hl-function,
+.hl-support.hl-function {
+	color: var(--yeti-color-text);
+	font-weight: var(--yeti-weight-strong);
+}
+
+.hl-string,
+.hl-constant,
+.hl-meta.hl-preprocessor .hl-string {
+	color: var(--yeti-color-secondary-text);
+}
+
+.hl-string .hl-punctuation {
+	color: inherit;
+	opacity: 0.7;
+}
+
+.hl-variable.hl-parameter {
+	font-style: italic;
+}
+
+.hl-invalid {
+	color: var(--yeti-color-alert-text);
+}

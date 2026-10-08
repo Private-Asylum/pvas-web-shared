@@ -1,9 +1,31 @@
-/* Documentation layout details Yeti leaves to the site. Unlayered on purpose,
-   so these win over Yeti's cascade layers without specificity fights. Colors
-   and sizes come from Yeti's tokens, so a product's theme.css restyles all of
-   it. Code highlighting colors are appended to this file at build time. */
+/* Documentation layout details Yeti leaves to the site, in the house's
+   terminal voice. Unlayered on purpose, so these win over Yeti's cascade
+   layers without specificity fights. Colors and sizes come from Yeti's tokens,
+   so a product's theme.css restyles all of it. Code highlighting colors are
+   appended to this file at build time.
 
-/* The sidebar: groups as disclosures, links as a quiet list. */
+   The markers drawn here (//, ##, the cursor) are decoration: each uses
+   content's empty alternative text, so assistive technology reads only the
+   words. */
+
+/* Search: Pagefind's modal in the house colors. */
+:root {
+	--pf-font: var(--yeti-font-sans);
+	--pf-background: var(--yeti-color-surface-raised);
+	--pf-text: var(--yeti-color-text);
+	--pf-text-secondary: var(--yeti-color-text);
+	--pf-text-muted: var(--yeti-color-text-muted);
+	--pf-border: var(--yeti-color-border);
+	--pf-border-focus: var(--yeti-color-primary);
+	--pf-outline-focus: var(--yeti-color-primary);
+	--pf-hover: color-mix(in oklch, var(--yeti-color-primary) 10%, var(--yeti-color-surface-raised));
+	--pf-border-radius: var(--yeti-radius-md);
+	--pf-mark: var(--yeti-color-primary-text);
+	--pf-modal-backdrop: color-mix(in oklch, var(--yeti-color-surface) 75%, transparent);
+	--pf-skeleton: var(--yeti-color-surface-sunken);
+}
+
+/* The sidebar: groups as disclosures, links as a file listing. */
 .pa-docs-nav details > summary {
 	cursor: pointer;
 	font-weight: var(--yeti-weight-strong);
@@ -14,57 +36,165 @@
 	margin: 0;
 	padding-inline-start: var(--yeti-space-sm);
 	list-style: none;
+	border-inline-start: var(--yeti-border-width) solid var(--yeti-color-border);
 }
 
 .pa-docs-nav li a {
 	display: block;
 	padding-block: 0.15em;
+	padding-inline: var(--yeti-space-xs);
+	margin-inline-start: calc(-1 * var(--yeti-space-sm) - var(--yeti-border-width));
+	border-inline-start: 2px solid transparent;
 	color: var(--yeti-color-text-muted);
 	text-decoration: none;
 	font-size: var(--yeti-text-sm);
 	overflow-wrap: anywhere;
 }
 
-.pa-docs-nav li a:hover,
+.pa-docs-nav li a:hover {
+	color: var(--yeti-color-text);
+}
+
+/* The current page is the selected line in a file picker. */
 .pa-docs-nav li a[aria-current="page"] {
+	border-inline-start-color: var(--yeti-color-primary);
+	background-color: color-mix(in oklch, var(--yeti-color-primary) 12%, transparent);
 	color: var(--yeti-color-primary-text);
-}
-
-.pa-docs-nav li a[aria-current="page"] {
 	font-weight: var(--yeti-weight-strong);
 }
 
-.pa-docs-nav-section {
+.pa-docs-nav-section,
+.pa-docs-toc-title {
 	margin: var(--yeti-space-xs) 0 0;
-	padding-inline-start: var(--yeti-space-sm);
 	font-size: var(--yeti-text-xs);
-	font-weight: var(--yeti-weight-strong);
-	text-transform: uppercase;
-	letter-spacing: 0.06em;
+	font-weight: var(--yeti-weight-normal);
 	color: var(--yeti-color-text-muted);
+}
+
+.pa-docs-nav-section::before,
+.pa-docs-toc-title::before {
+	content: "// " / "";
+	color: var(--yeti-color-primary-text);
+	opacity: 0.6;
 }
 
 /* The table of contents. */
 .pa-docs-toc-title {
 	margin: 0 0 var(--yeti-space-xs);
-	font-size: var(--yeti-text-xs);
-	font-weight: var(--yeti-weight-strong);
-	text-transform: uppercase;
-	letter-spacing: 0.06em;
-	color: var(--yeti-color-text-muted);
+	text-transform: lowercase;
 }
 
 .pa-docs-toc-sub {
 	padding-inline-start: var(--yeti-space-sm);
 }
 
-/* The article. */
-.pa-docs-article {
-	min-inline-size: 0;
+/* The columns. The contents column only earns its width on a wide screen; below that the
+   article takes the room. On a phone, where the sidebar stacks, the article comes first and the
+   sidebar's long list follows it. */
+@media (width < 80rem) {
+	.pa-docs-toc-column {
+		display: none;
+	}
 }
 
+@media (width < 40rem) {
+	.pa-docs-side {
+		order: 1;
+	}
+}
+
+/* The article. */
 .pa-docs-article h2 {
 	margin-block-start: var(--yeti-space-xl);
+}
+
+/* Type names are long single words: a reference title is set smaller than a page title, and any
+   title breaks rather than run under the next column. */
+.pa-docs-prose h1 {
+	overflow-wrap: anywhere;
+}
+
+.pa-docs-prose h1.pa-docs-symbol {
+	font-size: var(--yeti-text-2xl);
+}
+
+/* Section headings carry their Markdown level, dimmed, in the phosphor. */
+.pa-docs-prose h2::before {
+	content: "## " / "";
+}
+
+.pa-docs-prose h3::before {
+	content: "### " / "";
+}
+
+.pa-docs-prose :is(h2, h3)::before {
+	color: var(--yeti-color-primary-text);
+	opacity: 0.45;
+	font-weight: var(--yeti-weight-normal);
+}
+
+/* Prose flow. Yeti zeroes block margins and spaces things with stacks, but rendered Markdown
+   arrives as plain siblings, so the article spaces them itself. :where keeps this weaker than
+   any heading or component rule. */
+.pa-docs-prose :where(h1, h2, h3, h4, p, ul, ol, dl, pre, blockquote, table, hr, details, div)
+	+ :where(h1, h2, h3, h4, p, ul, ol, dl, pre, blockquote, table, hr, details, div) {
+	margin-block-start: var(--yeti-space-md);
+}
+
+.pa-docs-prose :where(h3, h4) {
+	margin-block-start: var(--yeti-space-lg);
+}
+
+/* Lists keep their markers inside the column. */
+.pa-docs-prose :where(ul, ol) {
+	padding-inline-start: 3ch;
+}
+
+.pa-docs-prose :where(li) + :where(li) {
+	margin-block-start: calc(var(--yeti-space-xs) / 2);
+}
+
+.pa-docs-prose :where(li)::marker {
+	color: var(--yeti-color-primary-text);
+}
+
+/* Callouts (`> [!NOTE]`, `> [!WARNING]`): a raised pane with a lit edge and a
+   bracketed label. */
+.markdown-alert {
+	padding: var(--yeti-space-sm) var(--yeti-space-md);
+	border: var(--yeti-border-width) solid var(--yeti-color-border);
+	border-inline-start: 2px solid var(--pa-alert-edge, var(--yeti-color-primary));
+	border-radius: var(--yeti-radius-sm);
+	background-color: color-mix(in oklch, var(--pa-alert-edge, var(--yeti-color-primary)) 6%, var(--yeti-color-surface-raised));
+}
+
+.markdown-alert > * + * {
+	margin-block-start: var(--yeti-space-xs);
+}
+
+.markdown-alert-title {
+	font-size: var(--yeti-text-xs);
+	font-weight: var(--yeti-weight-strong);
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
+	color: var(--pa-alert-edge, var(--yeti-color-primary-text));
+}
+
+.markdown-alert-title::before {
+	content: "[" / "";
+}
+
+.markdown-alert-title::after {
+	content: "]" / "";
+}
+
+.markdown-alert-tip {
+	--pa-alert-edge: var(--yeti-color-secondary-text);
+}
+
+.markdown-alert-warning,
+.markdown-alert-caution {
+	--pa-alert-edge: var(--yeti-color-alert-text);
 }
 
 .pa-docs-relations {
@@ -75,6 +205,7 @@
 
 .pa-docs-relations dt {
 	font-weight: var(--yeti-weight-strong);
+	color: var(--yeti-color-text-muted);
 }
 
 .pa-docs-relations dd {
@@ -87,26 +218,30 @@
 }
 
 .pa-docs-meta {
-	border-block-start: var(--yeti-border-width) solid var(--yeti-color-border, currentColor);
+	border-block-start: var(--yeti-border-width) dashed var(--yeti-color-border-strong);
 	padding-block-start: var(--yeti-space-md);
 }
 
-/* Highlighted code: syntect writes the colors; this is the box around them. */
+/* Highlighted code: the colors are appended below; this is the box around them. */
 pre.syntax-highlighting {
 	padding: var(--yeti-space-sm) var(--yeti-space-md);
-	border-radius: var(--yeti-radius-md);
+	border-radius: var(--yeti-radius-sm);
 	overflow-x: auto;
 	font-size: var(--yeti-text-sm);
+	line-height: 1.6;
 }
 
-/* Landing page. */
+/* Landing page: a prompt, a headline ending in the cursor, and cards that
+   read as commands. */
 .pa-docs-eyebrow {
 	margin: 0;
 	font-size: var(--yeti-text-sm);
-	font-weight: var(--yeti-weight-strong);
-	text-transform: uppercase;
-	letter-spacing: 0.12em;
-	color: var(--yeti-color-primary-text);
+	color: var(--yeti-color-secondary-text);
+}
+
+.pa-docs-eyebrow::before {
+	content: "~/" / "";
+	color: var(--yeti-color-text-muted);
 }
 
 a.pa-docs-card {
@@ -114,6 +249,22 @@ a.pa-docs-card {
 	text-decoration: none;
 }
 
+a.pa-docs-card h2 {
+	font-size: var(--yeti-text-lg);
+}
+
+a.pa-docs-card h2::after {
+	content: "→" / "";
+	display: inline-block;
+	margin-inline-start: 0.5ch;
+	color: var(--yeti-color-primary-text);
+	transition: translate var(--yeti-duration-fast) ease;
+}
+
 a.pa-docs-card:hover h2 {
 	color: var(--yeti-color-primary-text);
+}
+
+a.pa-docs-card:hover h2::after {
+	translate: 0.25em 0;
 }

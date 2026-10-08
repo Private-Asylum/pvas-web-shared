@@ -898,7 +898,6 @@ dependencies = [
  "pvas-web-site",
  "serde",
  "serde_json",
- "syntect",
  "toml",
 ]
 

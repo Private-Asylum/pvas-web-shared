@@ -57,6 +57,8 @@ fn builds_every_kind_of_page() -> io::Result<()> {
         "+++\ntitle = \"Start\"\ngroup = \"Guide\"\n+++\n\nSee [the reference](/reference/).\n",
     )?;
     let site = build_site(&dir.join("docs.toml"))?;
+    assert_eq!(site.base(), "/fixture/");
+    assert!(site.search());
 
     for path in [
         "index.html",

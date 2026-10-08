@@ -40,7 +40,7 @@ const FRONT_MATTER: &str = "+++";
 
 /// Renders markdown. Built once per site: the highlighter loads its grammars on creation.
 pub struct Markdown {
-    /// Fenced-code highlighter, emitting classes styled by [`crate::highlight::stylesheet`].
+    /// Fenced-code highlighter, emitting classes styled by [`crate::highlight::STYLESHEET`].
     highlighter: SyntectAdapter,
 }
 

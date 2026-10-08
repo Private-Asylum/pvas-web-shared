@@ -2,11 +2,10 @@
 //!
 //! Run from the product's documentation repository, which holds `docs.toml`:
 //!
-//!     pvas-docs                    # writes public/
-//!     pvas-docs serve              # writes it and previews it at http://127.0.0.1:8080/
+//!     pvas-docs                    # writes public/ and indexes it for search
+//!     pvas-docs serve              # the same, then previews it at http://127.0.0.1:8080/<slug>/
 //!
-//! The preview serves the site at the root; deployed, it lives under its base path (`/gantry/`),
-//! so follow links from the landing page rather than typing paths.
+//! The search index comes from Pagefind through `npx`, so Node must be installed.
 
 use std::path::Path;
 use std::process::ExitCode;

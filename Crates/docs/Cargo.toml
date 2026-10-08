@@ -33,7 +33,6 @@ pvas-web-components.workspace = true
 pvas-web-site.workspace = true
 serde.workspace = true
 serde_json.workspace = true
-syntect.workspace = true
 toml.workspace = true
 
 [lints]

@@ -32,12 +32,16 @@ pub struct NavProps {
     action: Option<NavLink>,
     /// Anything else for the end of the bar, after the call to action: a search trigger, say.
     extra_actions: Option<Element>,
+    /// The bar's own width (a Yeti width step: `md`, `lg`, `xl`) below which the links fold
+    /// behind the toggle. Defaults to `md`; a bar with more links needs a wider step, since the
+    /// links never wrap.
+    threshold: Option<&'static str>,
 }
 
 /// The site bar.
 ///
 /// The menu is a native `popover` opened by the toggle, so it needs no script: Yeti shows the
-/// links inline above its `md` threshold and behind the toggle below it.
+/// links inline at or above the threshold and behind the toggle below it.
 #[component]
 pub fn Nav(props: NavProps) -> Element {
     let NavProps {
@@ -45,12 +49,13 @@ pub fn Nav(props: NavProps) -> Element {
         links,
         action,
         extra_actions,
+        threshold,
     } = props;
     rsx! {
         nav {
             class: "nav",
             "aria-label": "Site",
-            "data-threshold": "md",
+            "data-threshold": threshold.unwrap_or("md"),
             "data-sticky": "",
             // A page-top bar sits on the edge; everything else that sticks keeps the offset.
             style: "--yeti-sticky-offset: 0",
@@ -77,7 +82,8 @@ pub fn Nav(props: NavProps) -> Element {
                     }
                 }
                 for link in links.iter() {
-                    li { a { href: "{link.href}", "{link.label}" } }
+                    // A link label never breaks across lines; the threshold folds the bar instead.
+                    li { a { href: "{link.href}", style: "white-space: nowrap", "{link.label}" } }
                 }
             }
             if action.is_some() || extra_actions.is_some() {

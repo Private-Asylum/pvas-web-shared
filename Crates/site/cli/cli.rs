@@ -10,7 +10,7 @@ use std::io;
 use std::path::{Path, PathBuf};
 use std::process::ExitCode;
 
-use crate::{Site, serve, write};
+use crate::{Site, index, serve, write};
 
 /// The preview server's default port.
 const DEFAULT_PORT: u16 = 8080;
@@ -64,8 +64,9 @@ fn parse_options(mut args: impl Iterator<Item = String>, serve: bool) -> Option<
 
 /// Runs a site's command line.
 ///
-/// Builds the [`Site`] with `build`, writes it to `--out` (default `default_out`), and with
-/// `serve` previews it. Returns the process exit code: 0 on success, 1 on failure, 2 on bad usage.
+/// Builds the [`Site`] with `build`, writes it to `--out` (default `default_out`), indexes it with
+/// Pagefind when the site asks for search, and with `serve` previews it under the site's base
+/// path. Returns the process exit code: 0 on success, 1 on failure, 2 on bad usage.
 pub fn run(
     program: &str,
     default_out: &Path,
@@ -77,7 +78,14 @@ pub fn run(
     };
     let out = command.out.unwrap_or_else(|| default_out.to_path_buf());
 
-    let summary = match build().and_then(|site| write(&site, &out)) {
+    let site = match build() {
+        Ok(site) => site,
+        Err(error) => {
+            eprintln!("error: {error}");
+            return ExitCode::FAILURE;
+        }
+    };
+    let summary = match write(&site, &out) {
         Ok(summary) => summary,
         Err(error) => {
             eprintln!("error: {error}");
@@ -91,8 +99,16 @@ pub fn run(
         out.display()
     );
 
+    if site.search() {
+        if let Err(error) = index(&out) {
+            eprintln!("error: indexing for search: {error}");
+            return ExitCode::FAILURE;
+        }
+        println!("Indexed {} for search", out.display());
+    }
+
     if command.serve
-        && let Err(error) = serve(&out, command.port)
+        && let Err(error) = serve(&out, site.base(), command.port)
     {
         eprintln!("error: {error}");
         return ExitCode::FAILURE;
