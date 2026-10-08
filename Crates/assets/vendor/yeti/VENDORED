@@ -1,0 +1,4 @@
+source:  https://github.com/foundation/yeti
+commit:  16cbae95133cb3fece233f221d88914919c3ea5f
+version: 7.0.0-alpha.0
+license: FSL-1.1-MIT (see LICENSE)

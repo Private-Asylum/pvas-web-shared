@@ -1,0 +1,18 @@
+# Normalize line endings on everything text-like.
+* text=auto eol=lf
+
+# Explicit binaries. NOTE: deliberately NOT Git LFS.
+# GitHub Pages does not resolve LFS pointers when publishing from a branch;
+# it serves the pointer file and the image 404s. Keep docs media small and
+# in plain git. If LFS ever becomes necessary, the publishing source must
+# move to GitHub Actions with `lfs: true` on checkout, first.
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.gif  binary
+*.webp binary
+*.ico  binary
+*.mp4  binary
+*.webm binary
+*.woff  binary
+*.woff2 binary

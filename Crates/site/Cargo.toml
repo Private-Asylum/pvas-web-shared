@@ -1,0 +1,25 @@
+[package]
+name = "pvas-web-site"
+description = "Turns rendered pages into a published static site: writing, the build/serve command line, a local preview"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+repository.workspace = true
+homepage.workspace = true
+publish.workspace = true
+
+[lib]
+crate-type = ["rlib"]
+path = "site.rs"
+
+[dependencies]
+pvas-web-assets.workspace = true
+tiny_http.workspace = true
+
+
+[[test]]
+name = "site"
+path = "tests/site/site.rs"
+
+[lints]
+workspace = true

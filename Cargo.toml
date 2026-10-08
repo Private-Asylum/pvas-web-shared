@@ -1,0 +1,85 @@
+[workspace]
+resolver = "3"
+members = [
+    # The facade: one dependency that re-exports everything below.
+    "Crates/pvas-web-shared",
+    # Dioxus components every site is built from: document, nav, footer.
+    "Crates/components",
+    # Yeti and the shared stylesheets, embedded so a site needs no vendor folder of its own.
+    "Crates/assets",
+    # Writing a site to disk, the build/serve command line and the preview server.
+    "Crates/site",
+    # Product documentation: the PVAS-DocGen manifest model, and the docs renderer.
+    "Crates/docs",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+authors = ["Private Asylum LLC"]
+repository = "https://github.com/Private-Asylum/pvas-web-shared"
+homepage = "https://privateasylum.com/"
+publish = false
+
+[workspace.dependencies]
+pvas-web-components = { path = "Crates/components" }
+pvas-web-assets = { path = "Crates/assets" }
+pvas-web-site = { path = "Crates/site" }
+pvas-web-docs = { path = "Crates/docs" }
+
+# Dioxus as a renderer only: components to HTML strings, no WASM, no hydration.
+# 0.8 is pre-release; stay on the stable 0.7 line.
+dioxus = { version = "0.7.10", default-features = false, features = ["macro", "html", "signals"] }
+dioxus-ssr = "0.7.10"
+
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+# Local preview server for `serve`. Never part of what deploys.
+tiny_http = "0.12.0"
+
+# Full strict. Every group denied, so a lint is an error locally and in CI alike. Groups sit at
+# priority -1 so an individual lint below can override its group.
+[workspace.lints.clippy]
+all = { level = "deny", priority = -1 }
+pedantic = { level = "deny", priority = -1 }
+nursery = { level = "deny", priority = -1 }
+cargo = { level = "deny", priority = -1 }
+# The one cargo lint that cannot hold: Dioxus's own dependency tree carries two majors of syn,
+# which no crate here can change. Revisit when Dioxus moves to a single syn.
+multiple_crate_versions = "allow"
+# Contradicts rustc's unreachable_pub, which is kept: inside a private module one demands
+# pub(crate) and the other forbids it (clippy documents the conflict; it is why this lint is
+# nursery). unreachable_pub is the stronger check: it catches pub items nothing exports.
+redundant_pub_crate = "allow"
+
+# From the restriction group, which is never enabled wholesale (its lints contradict each other,
+# and clippy flags doing so as blanket_clippy_restriction_lints): the ones that hold here.
+allow_attributes = "deny"
+allow_attributes_without_reason = "deny"
+dbg_macro = "deny"
+expect_used = "deny"
+indexing_slicing = "deny"
+missing_docs_in_private_items = "deny"
+panic = "deny"
+print_stderr = "deny"
+print_stdout = "deny"
+todo = "deny"
+undocumented_unsafe_blocks = "deny"
+unimplemented = "deny"
+unreachable = "deny"
+unwrap_used = "deny"
+
+[workspace.lints.rust]
+unsafe_code = "forbid"
+missing_docs = "deny"
+missing_debug_implementations = "deny"
+unreachable_pub = "deny"
+unused_qualifications = "deny"
+unused_results = "deny"
+rust_2018_idioms = { level = "deny", priority = -1 }
+unused = { level = "deny", priority = -1 }
+
+[workspace.lints.rustdoc]
+broken_intra_doc_links = "deny"
+private_intra_doc_links = "deny"

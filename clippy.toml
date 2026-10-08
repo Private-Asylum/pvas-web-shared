@@ -1,0 +1,3 @@
+# Proper nouns the doc_markdown lint would otherwise demand in backticks. ".." keeps clippy's
+# own defaults (GitHub, JavaScript, ...) alongside these.
+doc-valid-idents = ["DocGen", "PVAS", "Dioxus", "VitePress", "Pagefind", ".."]

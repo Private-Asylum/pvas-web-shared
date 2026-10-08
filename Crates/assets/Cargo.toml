@@ -1,0 +1,20 @@
+[package]
+name = "pvas-web-assets"
+description = "Yeti and the shared stylesheets, embedded for every Private Asylum site"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+repository.workspace = true
+homepage.workspace = true
+publish.workspace = true
+
+[lib]
+crate-type = ["rlib"]
+path = "assets.rs"
+
+[[test]]
+name = "assets"
+path = "tests/assets/assets.rs"
+
+[lints]
+workspace = true

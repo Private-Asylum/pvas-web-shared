@@ -1,0 +1,24 @@
+[package]
+name = "pvas-web-docs"
+description = "Product documentation for Private Asylum sites: the PVAS-DocGen manifest model, and the docs renderer"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+repository.workspace = true
+homepage.workspace = true
+publish.workspace = true
+
+[lib]
+crate-type = ["rlib"]
+path = "docs.rs"
+
+[[test]]
+name = "manifest"
+path = "tests/manifest/manifest.rs"
+
+[dependencies]
+serde.workspace = true
+serde_json.workspace = true
+
+[lints]
+workspace = true

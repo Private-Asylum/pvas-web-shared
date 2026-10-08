@@ -1,0 +1,1800 @@
+{
+  "$schema": "https://raw.githubusercontent.com/JetBrains/web-types/master/schema/web-types.json",
+  "name": "yeti-css",
+  "version": "7.0.0-alpha.0",
+  "description-markup": "markdown",
+  "contributions": {
+    "html": {
+      "attributes": [
+        {
+          "name": "data-actions",
+          "description": "nav, on a child (> *): Buttons at the end of the bar.",
+          "value": {
+            "kind": "plain",
+            "type": "boolean"
+          }
+        },
+        {
+          "name": "data-affix",
+          "description": "buttons: Join the buttons into one segmented control that shares borders.",
+          "value": {
+            "kind": "plain",
+            "type": "boolean"
+          }
+        },
+        {
+          "name": "data-align",
+          "description": "cluster: Vertical alignment of items within a row. columns: Vertical alignment of the columns. icon: How the icon lines up with the text: centered on the line, or on the baseline. layer: Vertical alignment of every child in the box. baseline behaves as start here. sidebar: Vertical alignment of the two children when side by side. stack: Horizontal alignment of the children. hero: Vertical alignment of copy and figure when side by side. media: Vertical alignment of figure and text when side by side. table, on a child (th, td, tr): Aligns the text of this cell, or of every cell in this row. A cell's own data-align or data-numeric outranks its row's.",
+          "value": {
+            "kind": "plain",
+            "type": "string"
+          },
+          "values": [
+            {
+              "name": "start"
+            },
+            {
+              "name": "center"
+            },
+            {
+              "name": "end"
+            },
+            {
+              "name": "stretch"
+            },
+            {
+              "name": "baseline"
+            }
+          ]
+        },
+        {
+          "name": "data-align-self",
+          "description": "layer, on a child (> *): Where the child sits vertically: start, center, end, stretch, or baseline.",
+          "value": {
+            "kind": "plain",
+            "type": "string"
+          },
+          "values": [
+            {
+              "name": "start"
+            },
+            {
+              "name": "center"
+            },
+            {
+              "name": "end"
+            },
+            {
+              "name": "stretch"
+            },
+            {
+              "name": "baseline"
+            }
+          ]
+        },
+        {
+          "name": "data-alternate",
+          "description": "timeline: Put entries on alternate sides of a centred rail once the list is wide enough.",
+          "value": {
+            "kind": "plain",
+            "type": "boolean"
+          }
+        },
+        {
+          "name": "data-attention",
+          "description": "attention: Which gesture: a swell and settle, or a shake from side to side.",
+          "value": {
+            "kind": "plain",
+            "type": "string"
+          },
+          "values": [
+            {
+              "name": "pulse"
+            },
+            {
+              "name": "shake"
+            }
+          ]
+        },
+        {
+          "name": "data-bleed",
+          "description": "breakout, on a child (> *): Breaks the child out of the column to span the full width.",
+          "value": {
+            "kind": "plain",
+            "type": "boolean"
+          }
+        },
+        {
+          "name": "data-border",
+          "description": "box, on a child (*): Draw a border of the border width, in the border color. Works on any element; it is a box's most common marker, which is why it is listed here. table: Borders around every cell instead of lines between rows, as a box draws its border.",
+          "value": {
+            "kind": "plain",
+            "type": "boolean"
+          }
+        },
+        {
+          "name": "data-brand",
+          "description": "nav, on a child (> *): The site's name or mark, usually a link home.",
+          "value": {
+            "kind": "plain",
+            "type": "boolean"
+          }
+        },
+        {
+          "name": "data-center",
+          "description": "cover, on a child (> *): Centers the child in the space the others leave; exactly one child carries it.",
+          "value": {
+            "kind": "plain",
+            "type": "boolean"
+          }
+        },
+        {
+          "name": "data-close",
+          "description": "alert, on a child (> button): The close button; removes the alert when alert.js is loaded. nav, on a child (li): The item holding the button that closes the panel; hidden in the bar.",
+          "value": {
+            "kind": "plain",
+            "type": "boolean"
+          }
+        },
+        {
+          "name": "data-columns",
+          "description": "columns: The most columns on one row; further children each take a full row. grid: The most columns allowed. Fewer appear when the container cannot fit that many at data-min; with data-min=\"none\" the count is exact. With data-fold, the count only ever halves. masonry: The most columns allowed. Fewer appear when the container cannot fit that many at data-min.",
+          "value": {
+            "kind": "plain",
+            "type": "string"
+          },
+          "values": [
+            {
+              "name": "1"
+            },
+            {
+              "name": "2"
+            },
+            {
+              "name": "3"
+            },
+            {
+              "name": "4"
+            },
+            {
+              "name": "5"
+            },
+            {
+              "name": "6"
+            }
+          ]
+        },
+        {
+          "name": "data-dots",
+          "description": "carousel, on a child (> *): The list of links to the slides, one per slide.",
+          "value": {
+            "kind": "plain",
+            "type": "boolean"
+          }
+        },
+        {
+          "name": "data-edge",
+          "description": "seam: Which edge is cut.",
+          "value": {
+            "kind": "plain",
+            "type": "string"
+          },
+          "values": [
+            {
+              "name": "top"
+            },
+            {
+              "name": "bottom"
+            },
+            {
+              "name": "both"
+            }
+          ]
+        },
+        {
+          "name": "data-emphasis",
+          "description": "alert: How loud: medium is a tint, high a solid fill, low the border alone. badge: medium is a subtle tint with dark text, high a solid fill, low text alone. button: How loud: high is a solid fill, medium an outline, low text alone. tabs: The selected tab is filled with the variant; without it the selected tab is underlined.",
+          "value": {
+            "kind": "plain",
+            "type": "string"
+          },
+          "values": [
+            {
+              "name": "high"
+            },
+            {
+              "name": "medium"
+            },
+            {
+              "name": "low"
+            }
+          ]
+        },
+        {
+          "name": "data-enter",
+          "description": "enter: Which arrival: a fade, a rise from below, a fall from above, a slide from the side data-side names, or a growth from slightly small.",
+          "value": {
+            "kind": "plain",
+            "type": "string"
+          },
+          "values": [
+            {
+              "name": "fade"
+            },
+            {
+              "name": "rise"
+            },
+            {
+              "name": "fall"
+            },
+            {
+              "name": "slide"
+            },
+            {
+              "name": "scale"
+            }
+          ]
+        },
+        {
+          "name": "data-error",
+          "description": "field, on a child (> *): The error message, hidden until the control is invalid.",
+          "value": {
+            "kind": "plain",
+            "type": "boolean"
+          }
+        },
+        {
+          "name": "data-fill",
+          "description": "overlay, on a child (> [data-over]): On the same child: cover the box rather than sit centred in it, which is what a veil, a dimmer or a loading state wants. Positioning only, so a veil that wants its own content centred puts a layout inside itself. stack: Make the stack at least as tall as the viewport, so a child carrying data-split reaches the bottom.",
+          "value": {
+            "kind": "plain",
+            "type": "boolean"
+          }
+        },
+        {
+          "name": "data-fit",
+          "description": "billboard: The two ends of the clamp, as a pair of type steps: the smallest the line may set and the largest.",
+          "value": {
+            "kind": "plain",
+            "type": "string"
+          },
+          "values": [
+            {
+              "name": "xs-sm"
+            },
+            {
+              "name": "xs-md"
+            },
+            {
+              "name": "xs-lg"
+            },
+            {
+              "name": "xs-xl"
+            },
+            {
+              "name": "xs-2xl"
+            },
+            {
+              "name": "xs-3xl"
+            },
+            {
+              "name": "xs-display"
+            },
+            {
+              "name": "sm-md"
+            },
+            {
+              "name": "sm-lg"
+            },
+            {
+              "name": "sm-xl"
+            },
+            {
+              "name": "sm-2xl"
+            },
+            {
+              "name": "sm-3xl"
+            },
+            {
+              "name": "sm-display"
+            },
+            {
+              "name": "md-lg"
+            },
+            {
+              "name": "md-xl"
+            },
+            {
+              "name": "md-2xl"
+            },
+            {
+              "name": "md-3xl"
+            },
+            {
+              "name": "md-display"
+            },
+            {
+              "name": "lg-xl"
+            },
+            {
+              "name": "lg-2xl"
+            },
+            {
+              "name": "lg-3xl"
+            },
+            {
+              "name": "lg-display"
+            },
+            {
+              "name": "xl-2xl"
+            },
+            {
+              "name": "xl-3xl"
+            },
+            {
+              "name": "xl-display"
+            },
+            {
+              "name": "2xl-3xl"
+            },
+            {
+              "name": "2xl-display"
+            },
+            {
+              "name": "3xl-display"
+            }
+          ]
+        },
+        {
+          "name": "data-fixed",
+          "description": "overlay: Center the held child over the viewport instead of this box, and keep it there while the page scrolls. table: Fixed table layout: the columns share the width equally, whatever their content. A width on a first-row header cell makes that column wider and the rest share what is left.",
+          "value": {
+            "kind": "plain",
+            "type": "boolean"
+          }
+        },
+        {
+          "name": "data-flip",
+          "description": "seam: Mirror the shape horizontally, for alternating sections. A curve is symmetric and does not change.",
+          "value": {
+            "kind": "plain",
+            "type": "boolean"
+          }
+        },
+        {
+          "name": "data-fold",
+          "description": "grid: Halve the column count as the grid narrows instead of stepping down one at a time. Needs data-columns 2, 4, or 6 and uses data-min as the width per column. data-min=\"none\" has no meaning with a fold: the count needs a width per column.",
+          "value": {
+            "kind": "plain",
+            "type": "boolean"
+          }
+        },
+        {
+          "name": "data-gap",
+          "description": "box: Padding on every side. breakout: The gutter on each side, and the space between children. center: The gutter on each side when the container is narrower than the maximum. cluster: Space between items, horizontally and between wrapped rows. columns: Space between columns, and between rows once they stack. cover: Minimum space between the centered child and whatever sits above or below it. grid: Space between columns and rows. icon: Space between the icon and its text. masonry: Space between columns and between items. overlay: The least space kept between the held child and the edges of the box. scroller: Space between items. sidebar: Space between the two children, side by side or stacked. stack: Space between children. A pair such as sm-lg grows fluidly from the first stop to the second. timeline: Space between entries. hero: Space between copy and figure. media: Space between the figure and the text. shell: Space between the rows, and between nav, main, and aside. buttons: Space between buttons when not affixed. carousel: Space between slides, and above the dots. nav: Space between the bar's parts and between the links. tabs: Space between the list and the panels.",
+          "value": {
+            "kind": "plain",
+            "type": "string"
+          },
+          "values": [
+            {
+              "name": "none"
+            },
+            {
+              "name": "xs"
+            },
+            {
+              "name": "sm"
+            },
+            {
+              "name": "md"
+            },
+            {
+              "name": "lg"
+            },
+            {
+              "name": "xl"
+            },
+            {
+              "name": "2xl"
+            },
+            {
+              "name": "3xl"
+            },
+            {
+              "name": "xs-sm"
+            },
+            {
+              "name": "xs-md"
+            },
+            {
+              "name": "xs-lg"
+            },
+            {
+              "name": "xs-xl"
+            },
+            {
+              "name": "xs-2xl"
+            },
+            {
+              "name": "xs-3xl"
+            },
+            {
+              "name": "sm-md"
+            },
+            {
+              "name": "sm-lg"
+            },
+            {
+              "name": "sm-xl"
+            },
+            {
+              "name": "sm-2xl"
+            },
+            {
+              "name": "sm-3xl"
+            },
+            {
+              "name": "md-lg"
+            },
+            {
+              "name": "md-xl"
+            },
+            {
+              "name": "md-2xl"
+            },
+            {
+              "name": "md-3xl"
+            },
+            {
+              "name": "lg-xl"
+            },
+            {
+              "name": "lg-2xl"
+            },
+            {
+              "name": "lg-3xl"
+            },
+            {
+              "name": "xl-2xl"
+            },
+            {
+              "name": "xl-3xl"
+            },
+            {
+              "name": "2xl-3xl"
+            }
+          ]
+        },
+        {
+          "name": "data-gap-block",
+          "description": "box: Padding top and bottom only, over whatever data-gap set.",
+          "value": {
+            "kind": "plain",
+            "type": "string"
+          },
+          "values": [
+            {
+              "name": "none"
+            },
+            {
+              "name": "xs"
+            },
+            {
+              "name": "sm"
+            },
+            {
+              "name": "md"
+            },
+            {
+              "name": "lg"
+            },
+            {
+              "name": "xl"
+            },
+            {
+              "name": "2xl"
+            },
+            {
+              "name": "3xl"
+            },
+            {
+              "name": "xs-sm"
+            },
+            {
+              "name": "xs-md"
+            },
+            {
+              "name": "xs-lg"
+            },
+            {
+              "name": "xs-xl"
+            },
+            {
+              "name": "xs-2xl"
+            },
+            {
+              "name": "xs-3xl"
+            },
+            {
+              "name": "sm-md"
+            },
+            {
+              "name": "sm-lg"
+            },
+            {
+              "name": "sm-xl"
+            },
+            {
+              "name": "sm-2xl"
+            },
+            {
+              "name": "sm-3xl"
+            },
+            {
+              "name": "md-lg"
+            },
+            {
+              "name": "md-xl"
+            },
+            {
+              "name": "md-2xl"
+            },
+            {
+              "name": "md-3xl"
+            },
+            {
+              "name": "lg-xl"
+            },
+            {
+              "name": "lg-2xl"
+            },
+            {
+              "name": "lg-3xl"
+            },
+            {
+              "name": "xl-2xl"
+            },
+            {
+              "name": "xl-3xl"
+            },
+            {
+              "name": "2xl-3xl"
+            }
+          ]
+        },
+        {
+          "name": "data-gap-inline",
+          "description": "box: Padding on the two sides only, over whatever data-gap set: a band wide at the sides and ordinary top and bottom.",
+          "value": {
+            "kind": "plain",
+            "type": "string"
+          },
+          "values": [
+            {
+              "name": "none"
+            },
+            {
+              "name": "xs"
+            },
+            {
+              "name": "sm"
+            },
+            {
+              "name": "md"
+            },
+            {
+              "name": "lg"
+            },
+            {
+              "name": "xl"
+            },
+            {
+              "name": "2xl"
+            },
+            {
+              "name": "3xl"
+            },
+            {
+              "name": "xs-sm"
+            },
+            {
+              "name": "xs-md"
+            },
+            {
+              "name": "xs-lg"
+            },
+            {
+              "name": "xs-xl"
+            },
+            {
+              "name": "xs-2xl"
+            },
+            {
+              "name": "xs-3xl"
+            },
+            {
+              "name": "sm-md"
+            },
+            {
+              "name": "sm-lg"
+            },
+            {
+              "name": "sm-xl"
+            },
+            {
+              "name": "sm-2xl"
+            },
+            {
+              "name": "sm-3xl"
+            },
+            {
+              "name": "md-lg"
+            },
+            {
+              "name": "md-xl"
+            },
+            {
+              "name": "md-2xl"
+            },
+            {
+              "name": "md-3xl"
+            },
+            {
+              "name": "lg-xl"
+            },
+            {
+              "name": "lg-2xl"
+            },
+            {
+              "name": "lg-3xl"
+            },
+            {
+              "name": "xl-2xl"
+            },
+            {
+              "name": "xl-3xl"
+            },
+            {
+              "name": "2xl-3xl"
+            }
+          ]
+        },
+        {
+          "name": "data-height",
+          "description": "cover: The band's least height: a stop of the height scale, half the viewport, or the whole of it. Content taller than the band grows it; nothing is cut off. hero: The band's least height: a stop of the height scale, half the viewport, or the whole of it, as a cover takes it. Content taller than the band grows it. demo: The preview box's height. A frame inside cannot size to its content, so this is where that is set; with data-resize=\"both\" it is the starting height.",
+          "value": {
+            "kind": "plain",
+            "type": "string"
+          },
+          "values": [
+            {
+              "name": "sm"
+            },
+            {
+              "name": "md"
+            },
+            {
+              "name": "lg"
+            },
+            {
+              "name": "xl"
+            },
+            {
+              "name": "half"
+            },
+            {
+              "name": "full"
+            }
+          ]
+        },
+        {
+          "name": "data-hide",
+          "description": "container, on a child (*): Hide this element once the nearest size container is this wide or wider. Below that width it is rendered as usual.",
+          "value": {
+            "kind": "plain",
+            "type": "string"
+          },
+          "values": [
+            {
+              "name": "2xs"
+            },
+            {
+              "name": "xs"
+            },
+            {
+              "name": "sm"
+            },
+            {
+              "name": "md"
+            },
+            {
+              "name": "lg"
+            },
+            {
+              "name": "xl"
+            },
+            {
+              "name": "2xl"
+            }
+          ]
+        },
+        {
+          "name": "data-hint",
+          "description": "field, on a child (> *): Help text, referenced by the control's aria-describedby.",
+          "value": {
+            "kind": "plain",
+            "type": "boolean"
+          }
+        },
+        {
+          "name": "data-hover",
+          "description": "table: Tint the row under the pointer.",
+          "value": {
+            "kind": "plain",
+            "type": "boolean"
+          }
+        },
+        {
+          "name": "data-inline",
+          "description": "field: Put the label beside the control. Checkboxes and radios are inline without it.",
+          "value": {
+            "kind": "plain",
+            "type": "boolean"
+          }
+        },
+        {
+          "name": "data-intrinsic",
+          "description": "center: Shrink the column to its content (still no wider than data-max) and center it, with each child centered on its own width inside it.",
+          "value": {
+            "kind": "plain",
+            "type": "boolean"
+          }
+        },
+        {
+          "name": "data-justify",
+          "description": "cluster: How items are distributed along the row. columns: Distribution of the columns along the row when they do not fill it. scroller: Where each item settles along the track when data-snap is set: its start edge, its center, or its end. Nothing without data-snap. pagination: Where the links sit in the row.",
+          "value": {
+            "kind": "plain",
+            "type": "string"
+          },
+          "values": [
+            {
+              "name": "start"
+            },
+            {
+              "name": "center"
+            },
+            {
+              "name": "end"
+            },
+            {
+              "name": "between"
+            },
+            {
+              "name": "around"
+            },
+            {
+              "name": "evenly"
+            }
+          ]
+        },
+        {
+          "name": "data-justify-self",
+          "description": "layer, on a child (> *): Where the child sits horizontally: start, center, end, or stretch.",
+          "value": {
+            "kind": "plain",
+            "type": "string"
+          },
+          "values": [
+            {
+              "name": "start"
+            },
+            {
+              "name": "center"
+            },
+            {
+              "name": "end"
+            },
+            {
+              "name": "stretch"
+            }
+          ]
+        },
+        {
+          "name": "data-lift",
+          "description": "lift: Which gesture: rise by --yeti-lift-distance, or scale by --yeti-lift-scale, for a tile in a row where a rise would break the line.",
+          "value": {
+            "kind": "plain",
+            "type": "string"
+          },
+          "values": [
+            {
+              "name": "rise"
+            },
+            {
+              "name": "scale"
+            }
+          ]
+        },
+        {
+          "name": "data-max",
+          "description": "breakout: The widest the reading column may be. center: The widest the content column may be. media: The widest the text may run side by side; the figure takes the rest of a wide row. data-width still sets where the two stack. dialog: The widest the dialog may grow, from the width scale; it is always narrower than the viewport by a gutter.",
+          "value": {
+            "kind": "plain",
+            "type": "string"
+          },
+          "values": [
+            {
+              "name": "2xs"
+            },
+            {
+              "name": "xs"
+            },
+            {
+              "name": "sm"
+            },
+            {
+              "name": "md"
+            },
+            {
+              "name": "lg"
+            },
+            {
+              "name": "xl"
+            },
+            {
+              "name": "2xl"
+            }
+          ]
+        },
+        {
+          "name": "data-min",
+          "description": "grid: The narrowest a column may be. With none, only data-columns decides the count; none is meant to be paired with data-columns, and alone gives a single full-width column. masonry: The narrowest a column may be. none is meant to be paired with data-columns, which then gives an exact count; alone it gives a single full-width column. hero, on a child (> *): The narrowest this child may get while the two share a row; the other gives way. Stacked, it has no effect.",
+          "value": {
+            "kind": "plain",
+            "type": "string"
+          },
+          "values": [
+            {
+              "name": "none"
+            },
+            {
+              "name": "2xs"
+            },
+            {
+              "name": "xs"
+            },
+            {
+              "name": "sm"
+            },
+            {
+              "name": "md"
+            },
+            {
+              "name": "lg"
+            },
+            {
+              "name": "xl"
+            },
+            {
+              "name": "2xl"
+            }
+          ]
+        },
+        {
+          "name": "data-note",
+          "description": "breakout, on a child (> *): A margin note: in the end gutter beside the child it follows when the breakout is wide, in the column when it is not.",
+          "value": {
+            "kind": "plain",
+            "type": "boolean"
+          }
+        },
+        {
+          "name": "data-nowrap",
+          "description": "table: Every cell keeps its line; put the table in a scroller. table, on a child (th, td): This cell keeps its line.",
+          "value": {
+            "kind": "plain",
+            "type": "boolean"
+          }
+        },
+        {
+          "name": "data-numbered",
+          "description": "toc: Number the entries before their links, nested ones as 2.1, in the muted color.",
+          "value": {
+            "kind": "plain",
+            "type": "boolean"
+          }
+        },
+        {
+          "name": "data-numeric",
+          "description": "table, on a child (*): Tabular figures, so digits line up, on any element; on a table's cells and headers the column is end-aligned too.",
+          "value": {
+            "kind": "plain",
+            "type": "boolean"
+          }
+        },
+        {
+          "name": "data-once",
+          "description": "enter: Arrives once, as it first comes near the viewport; without enter.js it is simply there, not animated.",
+          "value": {
+            "kind": "plain",
+            "type": "boolean"
+          }
+        },
+        {
+          "name": "data-orientation",
+          "description": "tabs: Whether the tab list runs along the top or down the side.",
+          "value": {
+            "kind": "plain",
+            "type": "string"
+          },
+          "values": [
+            {
+              "name": "horizontal"
+            },
+            {
+              "name": "vertical"
+            }
+          ]
+        },
+        {
+          "name": "data-over",
+          "description": "overlay, on a child (> *): Lifts the child out of the flow and centers it over the box; exactly one child carries it.",
+          "value": {
+            "kind": "plain",
+            "type": "boolean"
+          }
+        },
+        {
+          "name": "data-paint",
+          "description": "box, on a child (*): Fill this element with a color by name: a hue at its base step with the text made for it, a constant, or a step of the greyscale. Up to grey-40 the text stays the page text; from grey-50 it becomes the page surface.",
+          "value": {
+            "kind": "plain",
+            "type": "string"
+          },
+          "values": [
+            {
+              "name": "primary"
+            },
+            {
+              "name": "secondary"
+            },
+            {
+              "name": "success"
+            },
+            {
+              "name": "warning"
+            },
+            {
+              "name": "alert"
+            },
+            {
+              "name": "neutral"
+            },
+            {
+              "name": "white"
+            },
+            {
+              "name": "black"
+            },
+            {
+              "name": "grey"
+            },
+            {
+              "name": "grey-0"
+            },
+            {
+              "name": "grey-10"
+            },
+            {
+              "name": "grey-20"
+            },
+            {
+              "name": "grey-30"
+            },
+            {
+              "name": "grey-40"
+            },
+            {
+              "name": "grey-50"
+            },
+            {
+              "name": "grey-60"
+            },
+            {
+              "name": "grey-70"
+            },
+            {
+              "name": "grey-80"
+            },
+            {
+              "name": "grey-90"
+            },
+            {
+              "name": "grey-100"
+            }
+          ]
+        },
+        {
+          "name": "data-panel",
+          "description": "nav: The shape of the open list below the threshold: a sheet under the bar, a drawer from the start edge, or the whole screen.",
+          "value": {
+            "kind": "plain",
+            "type": "string"
+          },
+          "values": [
+            {
+              "name": "sheet"
+            },
+            {
+              "name": "drawer"
+            },
+            {
+              "name": "screen"
+            }
+          ]
+        },
+        {
+          "name": "data-placement",
+          "description": "tooltip: Which side of the trigger the bubble sits on.",
+          "value": {
+            "kind": "plain",
+            "type": "string"
+          },
+          "values": [
+            {
+              "name": "top"
+            },
+            {
+              "name": "bottom"
+            },
+            {
+              "name": "start"
+            },
+            {
+              "name": "end"
+            }
+          ]
+        },
+        {
+          "name": "data-preview",
+          "description": "demo, on a child (> div): Marks the resizable box and names the example; the bar across the top of the box shows the value. Direct markup taller than the box scrolls, so a box holding it carries tabindex=\"0\" to stay reachable from the keyboard; a framed box does not.",
+          "value": {
+            "kind": "plain",
+            "type": "string"
+          }
+        },
+        {
+          "name": "data-print",
+          "description": "print: Which medium the element belongs to: only, on paper and nowhere else, or none, everywhere but paper.",
+          "value": {
+            "kind": "plain",
+            "type": "string"
+          },
+          "values": [
+            {
+              "name": "only"
+            },
+            {
+              "name": "none"
+            }
+          ]
+        },
+        {
+          "name": "data-raised",
+          "description": "card: A shadow instead of a border.",
+          "value": {
+            "kind": "plain",
+            "type": "boolean"
+          }
+        },
+        {
+          "name": "data-ratio",
+          "description": "frame: Width to height. hero, media: The figure's aspect ratio. card: The picture's aspect ratio while it sits on top of the body. Past data-threshold the picture moves beside the body and fills that column, and the ratio stops applying.",
+          "value": {
+            "kind": "plain",
+            "type": "string"
+          },
+          "values": [
+            {
+              "name": "1/1"
+            },
+            {
+              "name": "4/3"
+            },
+            {
+              "name": "3/2"
+            },
+            {
+              "name": "16/9"
+            },
+            {
+              "name": "21/9"
+            }
+          ]
+        },
+        {
+          "name": "data-resize",
+          "description": "demo: Which way the reader can drag the box: its width only, or both width and height.",
+          "value": {
+            "kind": "plain",
+            "type": "string"
+          },
+          "values": [
+            {
+              "name": "width"
+            },
+            {
+              "name": "both"
+            }
+          ]
+        },
+        {
+          "name": "data-rows",
+          "description": "grid: Line up the parts of the children across each row: the value is how many rows each child spans, one per part.",
+          "value": {
+            "kind": "plain",
+            "type": "string"
+          },
+          "values": [
+            {
+              "name": "2"
+            },
+            {
+              "name": "3"
+            },
+            {
+              "name": "4"
+            },
+            {
+              "name": "5"
+            },
+            {
+              "name": "6"
+            }
+          ]
+        },
+        {
+          "name": "data-rule",
+          "description": "stack: A line between children, of the border width in the border color, in the middle of each gap. The gap is unchanged.",
+          "value": {
+            "kind": "plain",
+            "type": "boolean"
+          }
+        },
+        {
+          "name": "data-scroll",
+          "description": "progress: Fill with how far the nearest scroll container has been scrolled, the page when the bar is at its top, instead of with a value: a reading-progress bar. On a block with the class, not a progress element, and hidden from assistive tech; where a scroll timeline is unsupported the bar is not shown.",
+          "value": {
+            "kind": "plain",
+            "type": "boolean"
+          }
+        },
+        {
+          "name": "data-shape",
+          "description": "seam: The shape of the cut edge.",
+          "value": {
+            "kind": "plain",
+            "type": "string"
+          },
+          "values": [
+            {
+              "name": "slant"
+            },
+            {
+              "name": "curve"
+            },
+            {
+              "name": "wave"
+            }
+          ]
+        },
+        {
+          "name": "data-show",
+          "description": "container, on a child (*): Show this element only while the nearest size container is this wide or wider. Below that width it is not rendered at all, and it is not in the accessibility tree either.",
+          "value": {
+            "kind": "plain",
+            "type": "string"
+          },
+          "values": [
+            {
+              "name": "2xs"
+            },
+            {
+              "name": "xs"
+            },
+            {
+              "name": "sm"
+            },
+            {
+              "name": "md"
+            },
+            {
+              "name": "lg"
+            },
+            {
+              "name": "xl"
+            },
+            {
+              "name": "2xl"
+            }
+          ]
+        },
+        {
+          "name": "data-side",
+          "description": "sidebar: Which child is the sidebar: the first (start) or the last (end). hero: Put the figure at the start or the end of the row regardless of source order. Once stacked, source order rules: write the copy first to meet the headline first on a phone. Moves it visually only; reading order stays as written. media: Put the figure at the start or the end while side by side, regardless of source order. Stacked, the source order holds. dropdown: Which edge of the trigger the panel lines up with. enter: Which side a slide comes from. The sides are logical, so start is the right edge in a right-to-left page.",
+          "value": {
+            "kind": "plain",
+            "type": "string"
+          },
+          "values": [
+            {
+              "name": "start"
+            },
+            {
+              "name": "end"
+            }
+          ]
+        },
+        {
+          "name": "data-size",
+          "description": "badge: The text size the badge sits beside; the badge renders one step smaller. breadcrumbs, pagination: The text step. button: Scales the text and the padding together. field: Scales the control's height and text. progress: The bar's thickness: half the size's space step. seam: The depth of the cut: twice the size's space step. spinner: The ring is one em of the size's text step. table: Cell padding and text size; sm is the compact table. toc: The text step, and the inset of each link with it.",
+          "value": {
+            "kind": "plain",
+            "type": "string"
+          },
+          "values": [
+            {
+              "name": "sm"
+            },
+            {
+              "name": "md"
+            },
+            {
+              "name": "lg"
+            }
+          ]
+        },
+        {
+          "name": "data-slide",
+          "description": "carousel, on a child (> [data-track] > *): One slide, with an id a dot can link to.",
+          "value": {
+            "kind": "plain",
+            "type": "boolean"
+          }
+        },
+        {
+          "name": "data-slides",
+          "description": "carousel: How many slides are visible at once.",
+          "value": {
+            "kind": "plain",
+            "type": "string"
+          },
+          "values": [
+            {
+              "name": "1"
+            },
+            {
+              "name": "2"
+            },
+            {
+              "name": "3"
+            },
+            {
+              "name": "4"
+            }
+          ]
+        },
+        {
+          "name": "data-snap",
+          "description": "scroller: Snap each item's start edge into place as the track scrolls.",
+          "value": {
+            "kind": "plain",
+            "type": "boolean"
+          }
+        },
+        {
+          "name": "data-space",
+          "description": "stack, on a child (> *): The gap before this one child, larger or smaller than the stack's own: more room above a heading, less between a label and its field. Does nothing on the first child; data-split wins on a child carrying both.",
+          "value": {
+            "kind": "plain",
+            "type": "string"
+          },
+          "values": [
+            {
+              "name": "none"
+            },
+            {
+              "name": "xs"
+            },
+            {
+              "name": "sm"
+            },
+            {
+              "name": "md"
+            },
+            {
+              "name": "lg"
+            },
+            {
+              "name": "xl"
+            },
+            {
+              "name": "2xl"
+            },
+            {
+              "name": "3xl"
+            },
+            {
+              "name": "xs-sm"
+            },
+            {
+              "name": "xs-md"
+            },
+            {
+              "name": "xs-lg"
+            },
+            {
+              "name": "xs-xl"
+            },
+            {
+              "name": "xs-2xl"
+            },
+            {
+              "name": "xs-3xl"
+            },
+            {
+              "name": "sm-md"
+            },
+            {
+              "name": "sm-lg"
+            },
+            {
+              "name": "sm-xl"
+            },
+            {
+              "name": "sm-2xl"
+            },
+            {
+              "name": "sm-3xl"
+            },
+            {
+              "name": "md-lg"
+            },
+            {
+              "name": "md-xl"
+            },
+            {
+              "name": "md-2xl"
+            },
+            {
+              "name": "md-3xl"
+            },
+            {
+              "name": "lg-xl"
+            },
+            {
+              "name": "lg-2xl"
+            },
+            {
+              "name": "lg-3xl"
+            },
+            {
+              "name": "xl-2xl"
+            },
+            {
+              "name": "xl-3xl"
+            },
+            {
+              "name": "2xl-3xl"
+            }
+          ]
+        },
+        {
+          "name": "data-span",
+          "description": "columns, on a child (> *): How many shares of the row the child takes: 2 is twice a plain sibling. Below the threshold it stacks like the rest. grid, on a child (> *): In a tracks grid, how many tracks the child covers. Without it the child covers one. hero, on a child (> *): How many shares of the row this child takes; the other child's default is 1.",
+          "value": {
+            "kind": "plain",
+            "type": "string"
+          },
+          "values": [
+            {
+              "name": "1"
+            },
+            {
+              "name": "2"
+            },
+            {
+              "name": "3"
+            },
+            {
+              "name": "4"
+            },
+            {
+              "name": "5"
+            },
+            {
+              "name": "6"
+            },
+            {
+              "name": "7"
+            },
+            {
+              "name": "8"
+            },
+            {
+              "name": "9"
+            },
+            {
+              "name": "10"
+            },
+            {
+              "name": "11"
+            },
+            {
+              "name": "12"
+            }
+          ]
+        },
+        {
+          "name": "data-split",
+          "description": "stack, on a child (> *): Pushes the child and everything after it to the end of the stack when the stack is taller than its content.",
+          "value": {
+            "kind": "plain",
+            "type": "boolean"
+          }
+        },
+        {
+          "name": "data-stagger",
+          "description": "enter: Animate the element's children one after another instead of the element itself, each a step later than the last.",
+          "value": {
+            "kind": "plain",
+            "type": "boolean"
+          }
+        },
+        {
+          "name": "data-start",
+          "description": "grid, on a child (> *): In a tracks grid, the column line the child begins on. Without it the child flows into the next free track.",
+          "value": {
+            "kind": "plain",
+            "type": "string"
+          },
+          "values": [
+            {
+              "name": "1"
+            },
+            {
+              "name": "2"
+            },
+            {
+              "name": "3"
+            },
+            {
+              "name": "4"
+            },
+            {
+              "name": "5"
+            },
+            {
+              "name": "6"
+            },
+            {
+              "name": "7"
+            },
+            {
+              "name": "8"
+            },
+            {
+              "name": "9"
+            },
+            {
+              "name": "10"
+            },
+            {
+              "name": "11"
+            },
+            {
+              "name": "12"
+            }
+          ]
+        },
+        {
+          "name": "data-sticky",
+          "description": "sidebar, on a child (> *): Pins this child at --yeti-sticky-offset from the top of the scrollport while the other one scrolls past it. It takes its own height rather than the row's, since a stretched item has nowhere to move. stack, on a child (> *): Pins this child at --yeti-sticky-offset from the top of the scrollport while the rest of the stack scrolls past it. It keeps the full width of the column, a stack stretching its children on the inline axis. shell, on a child (> div > :is(nav, aside)): Pins the nav or the aside at --yeti-sticky-offset from the top of the scrollport while main scrolls past it. nav: Keep the bar at the top of the scrollport as the page scrolls, at --yeti-sticky-offset from the edge.",
+          "value": {
+            "kind": "plain",
+            "type": "boolean"
+          }
+        },
+        {
+          "name": "data-stretch",
+          "description": "card, on a child (a): Stretches the link over the whole card, so the card is clickable while the link keeps its own name.",
+          "value": {
+            "kind": "plain",
+            "type": "boolean"
+          }
+        },
+        {
+          "name": "data-striped",
+          "description": "table: Tint every other body row.",
+          "value": {
+            "kind": "plain",
+            "type": "boolean"
+          }
+        },
+        {
+          "name": "data-stylesheet",
+          "description": "demo: Read by the module: the stylesheet the frame it builds should load, when it is not the host page's own yeti.css; yeti.js is expected beside it.",
+          "value": {
+            "kind": "plain",
+            "type": "string"
+          }
+        },
+        {
+          "name": "data-surface",
+          "description": "box: Fill the box with one of the three surface tones, making it a visible panel. Absent, the box is transparent and only its padding does anything.",
+          "value": {
+            "kind": "plain",
+            "type": "string"
+          },
+          "values": [
+            {
+              "name": "base"
+            },
+            {
+              "name": "raised"
+            },
+            {
+              "name": "sunken"
+            }
+          ]
+        },
+        {
+          "name": "data-text",
+          "description": "box, on a child (*): Color this element's words by name, from the same list. On an element that is also painted it wins over the automatic text color.",
+          "value": {
+            "kind": "plain",
+            "type": "string"
+          },
+          "values": [
+            {
+              "name": "primary"
+            },
+            {
+              "name": "secondary"
+            },
+            {
+              "name": "success"
+            },
+            {
+              "name": "warning"
+            },
+            {
+              "name": "alert"
+            },
+            {
+              "name": "neutral"
+            },
+            {
+              "name": "white"
+            },
+            {
+              "name": "black"
+            },
+            {
+              "name": "grey"
+            },
+            {
+              "name": "grey-0"
+            },
+            {
+              "name": "grey-10"
+            },
+            {
+              "name": "grey-20"
+            },
+            {
+              "name": "grey-30"
+            },
+            {
+              "name": "grey-40"
+            },
+            {
+              "name": "grey-50"
+            },
+            {
+              "name": "grey-60"
+            },
+            {
+              "name": "grey-70"
+            },
+            {
+              "name": "grey-80"
+            },
+            {
+              "name": "grey-90"
+            },
+            {
+              "name": "grey-100"
+            }
+          ]
+        },
+        {
+          "name": "data-threshold",
+          "description": "cluster: The cluster's own width below which it is a column of full-width items; at or above it, the wrapping row. Makes the cluster a size container, so it takes the width of its block instead of its content. columns: The container width below which the columns become rows. grid: With data-tracks: the grid's own width below which every child takes the whole row, in source order; at or above it, the placement applies. hero: The container width below which copy and figure become rows. card: The card's own width from which the picture sits beside the text instead of on top. nav: The nav's own width at or above which the links sit in the bar; below it they are behind the toggle. pagination: The pagination's own width below which only Previous, the current page, and Next remain.",
+          "value": {
+            "kind": "plain",
+            "type": "string"
+          },
+          "values": [
+            {
+              "name": "2xs"
+            },
+            {
+              "name": "xs"
+            },
+            {
+              "name": "sm"
+            },
+            {
+              "name": "md"
+            },
+            {
+              "name": "lg"
+            },
+            {
+              "name": "xl"
+            },
+            {
+              "name": "2xl"
+            }
+          ]
+        },
+        {
+          "name": "data-track",
+          "description": "carousel, on a child (> *): The scrolling track that holds the slides.",
+          "value": {
+            "kind": "plain",
+            "type": "boolean"
+          }
+        },
+        {
+          "name": "data-tracks",
+          "description": "grid: A fixed number of equal tracks that children are placed on with data-start and data-span, leaving any track nothing is placed on empty. Replaces the fitted columns, so data-min and data-columns have no effect alongside it, and it does not mix with data-fold.",
+          "value": {
+            "kind": "plain",
+            "type": "string"
+          },
+          "values": [
+            {
+              "name": "2"
+            },
+            {
+              "name": "3"
+            },
+            {
+              "name": "4"
+            },
+            {
+              "name": "5"
+            },
+            {
+              "name": "6"
+            },
+            {
+              "name": "7"
+            },
+            {
+              "name": "8"
+            },
+            {
+              "name": "9"
+            },
+            {
+              "name": "10"
+            },
+            {
+              "name": "11"
+            },
+            {
+              "name": "12"
+            }
+          ]
+        },
+        {
+          "name": "data-trigger",
+          "description": "dropdown: What opens the panel. Click always works; hover adds opening under the pointer, and needs the optional module and a pointer that hovers.",
+          "value": {
+            "kind": "plain",
+            "type": "string"
+          },
+          "values": [
+            {
+              "name": "click"
+            },
+            {
+              "name": "hover"
+            }
+          ]
+        },
+        {
+          "name": "data-variant",
+          "description": "alert: Which hue: success for done, warning for careful, danger for wrong (alert is the same ladder under its Foundation 6 name), primary for news. badge: Which hue tints the badge. button: Which hue's ladder the button uses. card: Tints the border and adds a bar along the top; the body stays plain. field: The color of a checked checkbox or radio. nav: The hue of the current link and of the hover tint. pagination: The hue of the current page and of the hover tint. progress: The hue of the filled part. spinner: The hue of the bright edge. tabs: The hue of the selected tab and its edge. toc: The hue of the current link and its edge bar.",
+          "value": {
+            "kind": "plain",
+            "type": "string"
+          },
+          "values": [
+            {
+              "name": "primary"
+            },
+            {
+              "name": "secondary"
+            },
+            {
+              "name": "success"
+            },
+            {
+              "name": "warning"
+            },
+            {
+              "name": "alert"
+            },
+            {
+              "name": "danger"
+            },
+            {
+              "name": "neutral"
+            },
+            {
+              "name": "black"
+            },
+            {
+              "name": "white"
+            }
+          ]
+        },
+        {
+          "name": "data-view",
+          "description": "enter: Play as the element scrolls into view instead of on load. Where a scroll timeline is unsupported, or the reader has asked for less motion, it plays on load instead.",
+          "value": {
+            "kind": "plain",
+            "type": "boolean"
+          }
+        },
+        {
+          "name": "data-width",
+          "description": "scroller: Give every item this width instead of its natural one. sidebar: The sidebar's preferred width. media: The figure's preferred width. shell: The preferred width of nav and aside. Three regions share a row once the container is about four times this width plus the gaps; two regions need about half that. demo: The preview box's starting width, before the reader drags it. Full width when absent.",
+          "value": {
+            "kind": "plain",
+            "type": "string"
+          },
+          "values": [
+            {
+              "name": "2xs"
+            },
+            {
+              "name": "xs"
+            },
+            {
+              "name": "sm"
+            },
+            {
+              "name": "md"
+            },
+            {
+              "name": "lg"
+            },
+            {
+              "name": "xl"
+            },
+            {
+              "name": "2xl"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

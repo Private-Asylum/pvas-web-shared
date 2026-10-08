@@ -1,0 +1,4586 @@
+{
+ "schema": 1,
+ "product": {
+  "slug": "gantry",
+  "title": "Gantry",
+  "version": "0.1.0",
+  "description": "A game-agnostic content framework. Experiences compose into a declared dependency tree and activate in observable stages, with game feature plugins reference counted across swaps, so shipped content and side-loaded mods travel the same path with load order computed instead of curated. Loads are tracked as named, tagged scopes, so a loading bar can say \"Environment 12/40\" and a live editor panel can attribute a hitch to the scope that caused it.",
+  "engine": "5.6.1",
+  "beta": true,
+  "modules": [
+   {
+    "name": "GantryCore",
+    "type": "Runtime"
+   },
+   {
+    "name": "GantryCoreEditor",
+    "type": "Editor"
+   },
+   {
+    "name": "GantryGauge",
+    "type": "Runtime"
+   },
+   {
+    "name": "GantryGaugeUI",
+    "type": "Runtime"
+   },
+   {
+    "name": "GantryGaugeEditor",
+    "type": "Editor"
+   },
+   {
+    "name": "GantryExperience",
+    "type": "Runtime"
+   }
+  ]
+ },
+ "concepts": [],
+ "types": [
+  {
+   "id": "EGantryCompatibility",
+   "kind": "enum",
+   "module": "GantryExperience",
+   "header": "GantryExperience/Public/Content/GantryContentMetadata.h",
+   "reflected": true,
+   "published": false,
+   "summary": "Outcome of checking a shipped unit against the running build.",
+   "cppForm": "enumClass",
+   "meta": {
+    "BlueprintType": "true"
+   },
+   "values": [
+    {
+     "name": "Compatible",
+     "displayName": "Compatible",
+     "value": 0,
+     "doc": "Safe to mount and activate."
+    },
+    {
+     "name": "EngineMismatch",
+     "displayName": "Engine Mismatch",
+     "value": 1,
+     "doc": "Built against a different engine. Code in the unit is binary incompatible; never negotiable."
+    },
+    {
+     "name": "GameVersionOutOfRange",
+     "displayName": "Game Version Out Of Range",
+     "value": 2,
+     "doc": "Engine matches, but the game build is outside the range the unit declares it supports."
+    },
+    {
+     "name": "Unstamped",
+     "displayName": "Unstamped",
+     "value": 3,
+     "doc": "Never stamped. Almost always an uncooked asset being asked a cooked-build question."
+    }
+   ]
+  },
+  {
+   "id": "EGantryExperienceAvailability",
+   "kind": "enum",
+   "module": "GantryExperience",
+   "header": "GantryExperience/Public/Experience/GantryExperienceTypes.h",
+   "reflected": true,
+   "published": false,
+   "summary": "Whether an experience can be played right now, and if not, why not.",
+   "cppForm": "enumClass",
+   "meta": {
+    "BlueprintType": "true"
+   },
+   "values": [
+    {
+     "name": "Available",
+     "displayName": "Available",
+     "value": 0,
+     "doc": "Present, compatible, chain fully resolvable. Playable."
+    },
+    {
+     "name": "NotInstalled",
+     "displayName": "Not Installed",
+     "value": 1,
+     "doc": "Listed by an installed ancestor but its own content is not mounted. Offer as a download."
+    },
+    {
+     "name": "Incompatible",
+     "displayName": "Incompatible",
+     "value": 2,
+     "doc": "Present, but built for a different engine or game version."
+    },
+    {
+     "name": "MissingDependency",
+     "displayName": "Missing Dependency",
+     "value": 3,
+     "doc": "Present, but a required parent is absent. Visible orphan; cannot activate."
+    }
+   ]
+  },
+  {
+   "id": "EGantryExperienceState",
+   "kind": "enum",
+   "module": "GantryExperience",
+   "header": "GantryExperience/Public/Experience/GantryExperienceTypes.h",
+   "reflected": true,
+   "published": false,
+   "summary": "Where an experience is in its lifecycle.",
+   "cppForm": "enumClass",
+   "meta": {
+    "BlueprintType": "true"
+   },
+   "values": [
+    {
+     "name": "None",
+     "displayName": "None",
+     "value": 0,
+     "doc": "Nothing set."
+    },
+    {
+     "name": "Resolving",
+     "displayName": "Resolving",
+     "value": 1,
+     "doc": "Definition is being resolved and loaded."
+    },
+    {
+     "name": "Loading",
+     "displayName": "Loading",
+     "value": 2,
+     "doc": "Stages are running."
+    },
+    {
+     "name": "Ready",
+     "displayName": "Ready",
+     "value": 3,
+     "doc": "Every stage completed; the experience is live."
+    },
+    {
+     "name": "Deactivating",
+     "displayName": "Deactivating",
+     "value": 4,
+     "doc": "Stages are being torn down."
+    },
+    {
+     "name": "Failed",
+     "displayName": "Failed",
+     "value": 5,
+     "doc": "A stage failed. The experience is not usable."
+    }
+   ]
+  },
+  {
+   "id": "EGantryLoadState",
+   "kind": "enum",
+   "module": "GantryGauge",
+   "header": "GantryGauge/Public/GantryLoadingTypes.h",
+   "reflected": true,
+   "published": false,
+   "summary": "Lifecycle of a load scope.",
+   "cppForm": "enumClass",
+   "meta": {
+    "BlueprintType": "true"
+   },
+   "values": [
+    {
+     "name": "Pending",
+     "displayName": "Pending",
+     "value": 0,
+     "doc": "Opened, nothing attached yet."
+    },
+    {
+     "name": "Loading",
+     "displayName": "Loading",
+     "value": 1,
+     "doc": "At least one request is in flight."
+    },
+    {
+     "name": "Completed",
+     "displayName": "Completed",
+     "value": 2,
+     "doc": "Every request finished successfully."
+    },
+    {
+     "name": "Failed",
+     "displayName": "Failed",
+     "value": 3,
+     "doc": "Finished with at least one asset that failed to resolve."
+    },
+    {
+     "name": "Cancelled",
+     "displayName": "Cancelled",
+     "value": 4,
+     "doc": "Abandoned before completion."
+    }
+   ]
+  },
+  {
+   "id": "EGantryResult",
+   "kind": "enum",
+   "module": "GantryCore",
+   "header": "GantryCore/Public/Core/GantryCoreTypes.h",
+   "reflected": true,
+   "published": false,
+   "summary": "Outcome of a Gantry operation that can fail in more than one interesting way.",
+   "cppForm": "enumClass",
+   "meta": {
+    "BlueprintType": "true"
+   },
+   "values": [
+    {
+     "name": "Success",
+     "displayName": "Success",
+     "value": 0,
+     "doc": "The operation completed."
+    },
+    {
+     "name": "Pending",
+     "displayName": "Pending",
+     "value": 1,
+     "doc": "Accepted and still running; a completion delegate will fire later."
+    },
+    {
+     "name": "InvalidArgument",
+     "displayName": "Invalid Argument",
+     "value": 2,
+     "doc": "Arguments were wrong. A programming error, not a runtime condition."
+    },
+    {
+     "name": "NotFound",
+     "displayName": "Not Found",
+     "value": 3,
+     "doc": "The thing being addressed does not exist, or its handle is stale."
+    },
+    {
+     "name": "NotReady",
+     "displayName": "Not Ready",
+     "value": 4,
+     "doc": "The subsystem is not initialised, or is shutting down."
+    },
+    {
+     "name": "Failed",
+     "displayName": "Failed",
+     "value": 5,
+     "doc": "Ran, but the result is not usable. Check the log."
+    },
+    {
+     "name": "Cancelled",
+     "displayName": "Cancelled",
+     "value": 6,
+     "doc": "Abandoned before completion at the caller's request."
+    }
+   ]
+  },
+  {
+   "id": "FGantryContentMetadata",
+   "kind": "struct",
+   "module": "GantryExperience",
+   "header": "GantryExperience/Public/Content/GantryContentMetadata.h",
+   "reflected": true,
+   "published": false,
+   "summary": "Provenance for one shipped unit of content, whether that unit is an experience or a plugin.",
+   "meta": {
+    "BlueprintType": "true"
+   },
+   "properties": [
+    {
+     "name": "EngineVersion",
+     "type": "FString",
+     "category": "Provenance",
+     "summary": "Engine this was cooked against, e.g.",
+     "description": "\"5.6.0-12345678\".",
+     "flags": [
+      "Edit",
+      "EditConst",
+      "BlueprintVisible",
+      "BlueprintReadOnly"
+     ]
+    },
+    {
+     "name": "GameVersion",
+     "type": "FString",
+     "category": "Provenance",
+     "summary": "Project version at cook time, from Project Settings -> Description -> Version.",
+     "flags": [
+      "Edit",
+      "EditConst",
+      "BlueprintVisible",
+      "BlueprintReadOnly"
+     ]
+    },
+    {
+     "name": "BuildNumber",
+     "type": "int32",
+     "category": "Provenance",
+     "summary": "Monotonic build counter, supplied by CI through the GANTRY_BUILD_NUMBER environment variable.",
+     "default": "0",
+     "flags": [
+      "Edit",
+      "EditConst",
+      "BlueprintVisible",
+      "BlueprintReadOnly"
+     ]
+    },
+    {
+     "name": "RequiredGameVersion",
+     "type": "FGantryVersionRange",
+     "category": "Compatibility",
+     "summary": "Game builds this content declares support for.",
+     "description": "Checked as a range rather than for equality: content almost never breaks on the first patch after it ships, and equality would force a recook of every unit on every game version bump.",
+     "default": "()",
+     "flags": [
+      "Edit",
+      "DefaultsOnly",
+      "BlueprintVisible",
+      "BlueprintReadOnly"
+     ]
+    },
+    {
+     "name": "Capabilities",
+     "type": "FGameplayTagContainer",
+     "category": "Compatibility",
+     "summary": "Free-form tags describing what this unit provides or needs.",
+     "description": "Gantry never interprets these. They exist so a game can gate content on its own axes (platform, storefront, rating) without Gantry growing a field per axis.",
+     "default": "()",
+     "flags": [
+      "Edit",
+      "DefaultsOnly",
+      "BlueprintVisible",
+      "BlueprintReadOnly"
+     ]
+    }
+   ],
+   "cpp": {
+    "file": "GantryExperience/Public/Content/GantryContentMetadata.h",
+    "line": 81,
+    "members": [
+     {
+      "kind": "variable",
+      "name": "EngineVersionTag",
+      "signature": "const FName FGantryContentMetadata::EngineVersionTag",
+      "summary": "Registry tag names, so readers and writers cannot drift apart.",
+      "static": true
+     },
+     {
+      "kind": "variable",
+      "name": "GameVersionTag",
+      "signature": "const FName FGantryContentMetadata::GameVersionTag",
+      "static": true
+     },
+     {
+      "kind": "variable",
+      "name": "BuildNumberTag",
+      "signature": "const FName FGantryContentMetadata::BuildNumberTag",
+      "static": true
+     },
+     {
+      "kind": "variable",
+      "name": "MinGameVersionTag",
+      "signature": "const FName FGantryContentMetadata::MinGameVersionTag",
+      "static": true
+     },
+     {
+      "kind": "variable",
+      "name": "MaxGameVersionTag",
+      "signature": "const FName FGantryContentMetadata::MaxGameVersionTag",
+      "static": true
+     },
+     {
+      "kind": "function",
+      "name": "IsStamped",
+      "signature": "bool FGantryContentMetadata::IsStamped() const",
+      "summary": "True once Stamp has run.",
+      "description": "Uncooked assets are unstamped and that is expected.",
+      "const": true
+     },
+     {
+      "kind": "function",
+      "name": "Stamp",
+      "signature": "void FGantryContentMetadata::Stamp()",
+      "summary": "Writes the provenance half from the running process.",
+      "description": "Call from PreSave when cooking. Deliberately not called at runtime: a stamp written on load would describe the wrong build."
+     },
+     {
+      "kind": "function",
+      "name": "CheckCompatibility",
+      "signature": "EGantryCompatibility FGantryContentMetadata::CheckCompatibility(FString &OutReason) const",
+      "summary": "Checks this content against the running build.",
+      "description": "OutReason is player-showable on failure.",
+      "const": true
+     },
+     {
+      "kind": "function",
+      "name": "AppendAssetRegistryTags",
+      "signature": "void FGantryContentMetadata::AppendAssetRegistryTags(FAssetRegistryTagsContext &Context) const",
+      "summary": "Mirrors this struct into an owner's asset registry tags.",
+      "const": true
+     },
+     {
+      "kind": "function",
+      "name": "FromAssetData",
+      "signature": "static bool FGantryContentMetadata::FromAssetData(const struct FAssetData &AssetData, FGantryContentMetadata &OutMetadata)",
+      "summary": "Rebuilds a metadata struct from registry tags, so compatibility is answerable without a load.",
+      "static": true
+     }
+    ]
+   }
+  },
+  {
+   "id": "FGantryCoreEditorModule",
+   "kind": "class",
+   "module": "GantryCoreEditor",
+   "header": "GantryCoreEditor/Public/GantryCoreEditor.h",
+   "reflected": false,
+   "published": false,
+   "summary": "GantryCoreEditor module.",
+   "cpp": {
+    "file": "GantryCoreEditor/Public/GantryCoreEditor.h",
+    "line": 20,
+    "bases": [
+     "IModuleInterface"
+    ],
+    "members": [
+     {
+      "kind": "function",
+      "name": "StartupModule",
+      "signature": "virtual void FGantryCoreEditorModule::StartupModule() override"
+     },
+     {
+      "kind": "function",
+      "name": "ShutdownModule",
+      "signature": "virtual void FGantryCoreEditorModule::ShutdownModule() override"
+     }
+    ]
+   }
+  },
+  {
+   "id": "FGantryCoreEditorStyle",
+   "kind": "class",
+   "module": "GantryCoreEditor",
+   "header": "GantryCoreEditor/Public/Toolbar/GantryCoreEditorStyle.h",
+   "reflected": false,
+   "published": false,
+   "summary": "Slate style for Gantry's editor UI.",
+   "cpp": {
+    "file": "GantryCoreEditor/Public/Toolbar/GantryCoreEditorStyle.h",
+    "line": 13,
+    "members": [
+     {
+      "kind": "function",
+      "name": "Initialize",
+      "signature": "static void FGantryCoreEditorStyle::Initialize()",
+      "static": true
+     },
+     {
+      "kind": "function",
+      "name": "Shutdown",
+      "signature": "static void FGantryCoreEditorStyle::Shutdown()",
+      "static": true
+     },
+     {
+      "kind": "function",
+      "name": "ReloadTextures",
+      "signature": "static void FGantryCoreEditorStyle::ReloadTextures()",
+      "static": true
+     },
+     {
+      "kind": "function",
+      "name": "Get",
+      "signature": "static const ISlateStyle & FGantryCoreEditorStyle::Get()",
+      "static": true
+     },
+     {
+      "kind": "function",
+      "name": "GetStyleSetName",
+      "signature": "static FName FGantryCoreEditorStyle::GetStyleSetName()",
+      "static": true
+     }
+    ]
+   }
+  },
+  {
+   "id": "FGantryCoreModule",
+   "kind": "class",
+   "module": "GantryCore",
+   "header": "GantryCore/Public/GantryCore.h",
+   "reflected": false,
+   "published": false,
+   "summary": "GantryCore runtime module.",
+   "cpp": {
+    "file": "GantryCore/Public/GantryCore.h",
+    "line": 16,
+    "bases": [
+     "IModuleInterface"
+    ],
+    "members": [
+     {
+      "kind": "function",
+      "name": "StartupModule",
+      "signature": "virtual void FGantryCoreModule::StartupModule() override"
+     },
+     {
+      "kind": "function",
+      "name": "ShutdownModule",
+      "signature": "virtual void FGantryCoreModule::ShutdownModule() override"
+     },
+     {
+      "kind": "function",
+      "name": "SupportsDynamicReloading",
+      "signature": "virtual bool FGantryCoreModule::SupportsDynamicReloading() override"
+     },
+     {
+      "kind": "function",
+      "name": "GetPtr",
+      "signature": "static FGantryCoreModule * FGantryCoreModule::GetPtr()",
+      "summary": "Convenience accessor.",
+      "description": "Null if the module is not loaded.",
+      "static": true
+     },
+     {
+      "kind": "function",
+      "name": "GetPluginBaseDir",
+      "signature": "static FString FGantryCoreModule::GetPluginBaseDir()",
+      "summary": "Absolute path to the plugin's base directory, or empty if it cannot be found.",
+      "static": true
+     }
+    ]
+   }
+  },
+  {
+   "id": "FGantryExperienceEntry",
+   "kind": "struct",
+   "module": "GantryExperience",
+   "header": "GantryExperience/Public/Experience/GantryExperienceDefinition.h",
+   "reflected": true,
+   "published": false,
+   "summary": "Cook-time snapshot of one listed child: everything showable about it without loading it.",
+   "meta": {
+    "BlueprintType": "true"
+   },
+   "properties": [
+    {
+     "name": "ExperienceTag",
+     "type": "FGameplayTag",
+     "category": "Entry",
+     "summary": "Identity, copied from the child's ExperienceTag.",
+     "default": "()",
+     "flags": [
+      "Edit",
+      "EditConst",
+      "BlueprintVisible",
+      "BlueprintReadOnly"
+     ]
+    },
+    {
+     "name": "ExperienceGuid",
+     "type": "FGuid",
+     "category": "Entry",
+     "summary": "Machine identity, copied from the child's ExperienceGuid.",
+     "default": "00000000000000000000000000000000",
+     "flags": [
+      "Edit",
+      "EditConst",
+      "BlueprintVisible",
+      "BlueprintReadOnly"
+     ]
+    },
+    {
+     "name": "ExperiencePath",
+     "type": "FSoftObjectPath",
+     "category": "Entry",
+     "summary": "Where the child definition lives.",
+     "default": "None",
+     "flags": [
+      "Edit",
+      "EditConst",
+      "BlueprintVisible",
+      "BlueprintReadOnly"
+     ]
+    },
+    {
+     "name": "DisplayName",
+     "type": "FText",
+     "category": "Entry",
+     "summary": "Copied from the child's display name at cook.",
+     "flags": [
+      "Edit",
+      "EditConst",
+      "BlueprintVisible",
+      "BlueprintReadOnly"
+     ]
+    },
+    {
+     "name": "Description",
+     "type": "FText",
+     "category": "Entry",
+     "summary": "Copied from the child's Description at cook.",
+     "flags": [
+      "Edit",
+      "EditConst",
+      "BlueprintVisible",
+      "BlueprintReadOnly"
+     ]
+    },
+    {
+     "name": "OwningPluginName",
+     "type": "FString",
+     "category": "Entry",
+     "summary": "Derived from the child's package path at cook; empty for base-game content.",
+     "flags": [
+      "Edit",
+      "EditConst",
+      "BlueprintVisible",
+      "BlueprintReadOnly"
+     ]
+    },
+    {
+     "name": "Metadata",
+     "type": "FGantryContentMetadata",
+     "category": "Entry",
+     "summary": "Copied from the child's stamped metadata, so compatibility is answerable while absent.",
+     "default": "(RequiredGameVersion=(),Capabilities=())",
+     "flags": [
+      "Edit",
+      "EditConst",
+      "BlueprintVisible",
+      "BlueprintReadOnly"
+     ]
+    }
+   ],
+   "cpp": {
+    "file": "GantryExperience/Public/Experience/GantryExperienceDefinition.h",
+    "line": 24
+   }
+  },
+  {
+   "id": "FGantryExperienceModule",
+   "kind": "class",
+   "module": "GantryExperience",
+   "header": "GantryExperience/Public/GantryExperienceModule.h",
+   "reflected": false,
+   "published": false,
+   "summary": "GantryExperience runtime module.",
+   "cpp": {
+    "file": "GantryExperience/Public/GantryExperienceModule.h",
+    "line": 16,
+    "bases": [
+     "IModuleInterface"
+    ],
+    "members": [
+     {
+      "kind": "function",
+      "name": "StartupModule",
+      "signature": "virtual void FGantryExperienceModule::StartupModule() override"
+     },
+     {
+      "kind": "function",
+      "name": "ShutdownModule",
+      "signature": "virtual void FGantryExperienceModule::ShutdownModule() override"
+     },
+     {
+      "kind": "function",
+      "name": "SupportsDynamicReloading",
+      "signature": "virtual bool FGantryExperienceModule::SupportsDynamicReloading() override"
+     }
+    ]
+   }
+  },
+  {
+   "id": "FGantryExperienceNode",
+   "kind": "struct",
+   "module": "GantryExperience",
+   "header": "GantryExperience/Public/Experience/GantryExperienceTree.h",
+   "reflected": false,
+   "published": false,
+   "summary": "One known experience, however it became known.",
+   "cpp": {
+    "file": "GantryExperience/Public/Experience/GantryExperienceTree.h",
+    "line": 17,
+    "members": [
+     {
+      "kind": "variable",
+      "name": "Tag",
+      "signature": "FGameplayTag FGantryExperienceNode::Tag"
+     },
+     {
+      "kind": "variable",
+      "name": "Path",
+      "signature": "FSoftObjectPath FGantryExperienceNode::Path"
+     },
+     {
+      "kind": "variable",
+      "name": "DisplayName",
+      "signature": "FText FGantryExperienceNode::DisplayName"
+     },
+     {
+      "kind": "variable",
+      "name": "Description",
+      "signature": "FText FGantryExperienceNode::Description"
+     },
+     {
+      "kind": "variable",
+      "name": "OwningPluginName",
+      "signature": "FString FGantryExperienceNode::OwningPluginName"
+     },
+     {
+      "kind": "variable",
+      "name": "Definition",
+      "signature": "const UGantryExperienceDefinition* FGantryExperienceNode::Definition",
+      "summary": "Loaded definition, or null when the content is not mounted."
+     },
+     {
+      "kind": "variable",
+      "name": "RequiredParents",
+      "signature": "TArray<FGameplayTag> FGantryExperienceNode::RequiredParents",
+      "summary": "Required parents: the lister for shipped content, AttachTo for side-loaded."
+     },
+     {
+      "kind": "variable",
+      "name": "OptionalDependencies",
+      "signature": "TArray<FGameplayTag> FGantryExperienceNode::OptionalDependencies",
+      "summary": "Declared wants.",
+      "description": "Never gate activation; order before this node when present."
+     },
+     {
+      "kind": "variable",
+      "name": "Depth",
+      "signature": "int32 FGantryExperienceNode::Depth",
+      "summary": "Longest chain from the root over required plus present-optional edges.",
+      "description": "Root is zero."
+     },
+     {
+      "kind": "variable",
+      "name": "Availability",
+      "signature": "EGantryExperienceAvailability FGantryExperienceNode::Availability"
+     },
+     {
+      "kind": "variable",
+      "name": "AvailabilityReason",
+      "signature": "FString FGantryExperienceNode::AvailabilityReason",
+      "summary": "Player-showable explanation when Availability is not Available."
+     },
+     {
+      "kind": "variable",
+      "name": "bSideLoaded",
+      "signature": "bool FGantryExperienceNode::bSideLoaded",
+      "summary": "True when discovered by the registry scan rather than a listing."
+     },
+     {
+      "kind": "variable",
+      "name": "ListedMetadata",
+      "signature": "FGantryContentMetadata FGantryExperienceNode::ListedMetadata",
+      "summary": "Snapshot metadata from the lister, used for compatibility answers while the definition is absent.",
+      "description": "When the definition is present its own stamped metadata is authoritative."
+     }
+    ]
+   }
+  },
+  {
+   "id": "FGantryExperienceStageContext",
+   "kind": "struct",
+   "module": "GantryExperience",
+   "header": "GantryExperience/Public/Experience/GantryExperienceStage.h",
+   "reflected": true,
+   "published": false,
+   "summary": "Everything a stage is allowed to know about the run it belongs to.",
+   "properties": [
+    {
+     "name": "Experience",
+     "type": "TObjectPtr<UGantryExperienceDefinition>",
+     "summary": "The experience being activated.",
+     "default": "None",
+     "flags": [
+      "Transient"
+     ]
+    },
+    {
+     "name": "Subsystem",
+     "type": "TObjectPtr<UGantryExperienceSubsystem>",
+     "summary": "The subsystem running the pipeline.",
+     "default": "None",
+     "flags": [
+      "Transient"
+     ]
+    },
+    {
+     "name": "World",
+     "type": "TObjectPtr<UWorld>",
+     "summary": "World the experience is activating in.",
+     "default": "None",
+     "flags": [
+      "Transient"
+     ]
+    }
+   ],
+   "cpp": {
+    "file": "GantryExperience/Public/Experience/GantryExperienceStage.h",
+    "line": 19,
+    "members": [
+     {
+      "kind": "variable",
+      "name": "LoadScope",
+      "signature": "FGantryHandle FGantryExperienceStageContext::LoadScope",
+      "summary": "Parent load scope for this run, so a stage can nest its own work inside it."
+     }
+    ]
+   }
+  },
+  {
+   "id": "FGantryExperienceTree",
+   "kind": "class",
+   "module": "GantryExperience",
+   "header": "GantryExperience/Public/Experience/GantryExperienceTree.h",
+   "reflected": false,
+   "published": false,
+   "summary": "The crawled experience tree: every experience the game knows about and how they relate.",
+   "cpp": {
+    "file": "GantryExperience/Public/Experience/GantryExperienceTree.h",
+    "line": 82,
+    "members": [
+     {
+      "kind": "function",
+      "name": "Build",
+      "signature": "bool FGantryExperienceTree::Build(const UGantryBaseExperienceDefinition *Base, FString *OutError=nullptr)",
+      "summary": "Crawls from the given root.",
+      "description": "Returns false on a structural fault — cycle, duplicate listing, listed-and-attached ambiguity — with OutError naming it. Per-node problems (absent content, incompatibility, orphaned attachments) are not faults; they land in node availability."
+     },
+     {
+      "kind": "function",
+      "name": "IsBuilt",
+      "signature": "bool FGantryExperienceTree::IsBuilt() const",
+      "summary": "True after a successful Build.",
+      "const": true
+     },
+     {
+      "kind": "function",
+      "name": "Reset",
+      "signature": "void FGantryExperienceTree::Reset()",
+      "summary": "Discards everything; the next Build starts fresh."
+     },
+     {
+      "kind": "function",
+      "name": "GetRootTag",
+      "signature": "FGameplayTag FGantryExperienceTree::GetRootTag() const",
+      "summary": "Tag of the tree's root — the base experience.",
+      "description": "Invalid until built.",
+      "const": true
+     },
+     {
+      "kind": "function",
+      "name": "FindNode",
+      "signature": "const FGantryExperienceNode * FGantryExperienceTree::FindNode(FGameplayTag Tag) const",
+      "summary": "Node by identity tag, or null if unknown.",
+      "const": true
+     },
+     {
+      "kind": "function",
+      "name": "FindNodeByPath",
+      "signature": "const FGantryExperienceNode * FGantryExperienceTree::FindNodeByPath(const FSoftObjectPath &Path) const",
+      "summary": "Node whose definition lives at the given path, or null.",
+      "const": true
+     },
+     {
+      "kind": "function",
+      "name": "GetKnownTags",
+      "signature": "void FGantryExperienceTree::GetKnownTags(FGameplayTagContainer &OutTags) const",
+      "summary": "Every known tag, installed or not.",
+      "const": true
+     },
+     {
+      "kind": "function",
+      "name": "GetAvailability",
+      "signature": "EGantryExperienceAvailability FGantryExperienceTree::GetAvailability(FGameplayTag Tag, FString &OutReason) const",
+      "summary": "Availability for one experience.",
+      "description": "Unknown tags report NotInstalled with a reason.",
+      "const": true
+     },
+     {
+      "kind": "function",
+      "name": "BuildActivationChain",
+      "signature": "bool FGantryExperienceTree::BuildActivationChain(FGameplayTag Leaf, TArray< const UGantryExperienceDefinition * > &OutChain, FString *OutError=nullptr) const",
+      "summary": "Assembles the activation chain for a leaf: its required closure, plus every *present* optional dependency of that closure (with their own required closures), ordered shallow to deep with ties broken by tag.",
+      "description": "Returns false if the leaf is unknown or anything in the required closure is not Available; absent optionals are skipped without comment beyond a verbose log — coping with their absence is the dependent's declared responsibility.",
+      "const": true
+     }
+    ]
+   }
+  },
+  {
+   "id": "FGantryGameFeatureActionTracker",
+   "kind": "class",
+   "module": "GantryExperience",
+   "header": "GantryExperience/Public/GameFeatures/GantryGameFeatureAction.h",
+   "reflected": false,
+   "published": false,
+   "summary": "Process-wide accounting for game feature actions that are still working.",
+   "cpp": {
+    "file": "GantryExperience/Public/GameFeatures/GantryGameFeatureAction.h",
+    "line": 32,
+    "members": [
+     {
+      "kind": "variable",
+      "name": "OnAllActionsComplete",
+      "signature": "FGantryOnAllActionsComplete FGantryGameFeatureActionTracker::OnAllActionsComplete",
+      "summary": "Fired on the game thread when the pending count falls to zero."
+     },
+     {
+      "kind": "function",
+      "name": "Get",
+      "signature": "static FGantryGameFeatureActionTracker & FGantryGameFeatureActionTracker::Get()",
+      "static": true
+     },
+     {
+      "kind": "function",
+      "name": "AddPending",
+      "signature": "void FGantryGameFeatureActionTracker::AddPending()",
+      "summary": "Records one unit of outstanding action work."
+     },
+     {
+      "kind": "function",
+      "name": "CompletePending",
+      "signature": "void FGantryGameFeatureActionTracker::CompletePending()",
+      "summary": "Retires one unit.",
+      "description": "Broadcasts OnAllActionsComplete when the last one retires."
+     },
+     {
+      "kind": "function",
+      "name": "GetPendingCount",
+      "signature": "int32 FGantryGameFeatureActionTracker::GetPendingCount() const",
+      "summary": "Outstanding action work across the process.",
+      "const": true
+     }
+    ]
+   }
+  },
+  {
+   "id": "FGantryGaugeEditorModule",
+   "kind": "class",
+   "module": "GantryGaugeEditor",
+   "header": "GantryGaugeEditor/Public/GantryGaugeEditor.h",
+   "reflected": false,
+   "published": false,
+   "summary": "GantryGaugeEditor module.",
+   "cpp": {
+    "file": "GantryGaugeEditor/Public/GantryGaugeEditor.h",
+    "line": 19,
+    "bases": [
+     "IModuleInterface"
+    ],
+    "members": [
+     {
+      "kind": "function",
+      "name": "StartupModule",
+      "signature": "virtual void FGantryGaugeEditorModule::StartupModule() override"
+     },
+     {
+      "kind": "function",
+      "name": "ShutdownModule",
+      "signature": "virtual void FGantryGaugeEditorModule::ShutdownModule() override"
+     }
+    ]
+   }
+  },
+  {
+   "id": "FGantryGaugeModule",
+   "kind": "class",
+   "module": "GantryGauge",
+   "header": "GantryGauge/Public/GantryGauge.h",
+   "reflected": false,
+   "published": false,
+   "summary": "GantryGauge runtime module.",
+   "cpp": {
+    "file": "GantryGauge/Public/GantryGauge.h",
+    "line": 23,
+    "bases": [
+     "IModuleInterface"
+    ],
+    "members": [
+     {
+      "kind": "function",
+      "name": "StartupModule",
+      "signature": "virtual void FGantryGaugeModule::StartupModule() override"
+     },
+     {
+      "kind": "function",
+      "name": "ShutdownModule",
+      "signature": "virtual void FGantryGaugeModule::ShutdownModule() override"
+     },
+     {
+      "kind": "function",
+      "name": "SupportsDynamicReloading",
+      "signature": "virtual bool FGantryGaugeModule::SupportsDynamicReloading() override"
+     },
+     {
+      "kind": "function",
+      "name": "GetPtr",
+      "signature": "static FGantryGaugeModule * FGantryGaugeModule::GetPtr()",
+      "summary": "Convenience accessor.",
+      "description": "Null if the module is not loaded.",
+      "static": true
+     },
+     {
+      "kind": "function",
+      "name": "GetLedger",
+      "signature": "static FGantryLoadLedger * FGantryGaugeModule::GetLedger()",
+      "summary": "The process-wide load ledger.",
+      "description": "Null before the module loads and after it unloads, so callers must check. Everything that records loads goes through here rather than holding its own pointer, because module unload during hot reload would otherwise leave dangling references.",
+      "static": true
+     }
+    ]
+   }
+  },
+  {
+   "id": "FGantryGaugeUIModule",
+   "kind": "class",
+   "module": "GantryGaugeUI",
+   "header": "GantryGaugeUI/Public/GantryGaugeUI.h",
+   "reflected": false,
+   "published": false,
+   "summary": "GantryGaugeUI module.",
+   "cpp": {
+    "file": "GantryGaugeUI/Public/GantryGaugeUI.h",
+    "line": 17,
+    "bases": [
+     "IModuleInterface"
+    ],
+    "members": [
+     {
+      "kind": "function",
+      "name": "StartupModule",
+      "signature": "virtual void FGantryGaugeUIModule::StartupModule() override"
+     },
+     {
+      "kind": "function",
+      "name": "ShutdownModule",
+      "signature": "virtual void FGantryGaugeUIModule::ShutdownModule() override"
+     }
+    ]
+   }
+  },
+  {
+   "id": "FGantryHandle",
+   "kind": "struct",
+   "module": "GantryCore",
+   "header": "GantryCore/Public/Core/GantryCoreTypes.h",
+   "reflected": true,
+   "published": false,
+   "summary": "Generational handle into a dense array.",
+   "meta": {
+    "BlueprintType": "true"
+   },
+   "properties": [
+    {
+     "name": "Index",
+     "type": "int32",
+     "category": "Gantry",
+     "default": "-1",
+     "flags": [
+      "BlueprintVisible",
+      "BlueprintReadOnly"
+     ]
+    },
+    {
+     "name": "Serial",
+     "type": "int32",
+     "category": "Gantry",
+     "default": "0",
+     "flags": [
+      "BlueprintVisible",
+      "BlueprintReadOnly"
+     ]
+    }
+   ],
+   "cpp": {
+    "file": "GantryCore/Public/Core/GantryCoreTypes.h",
+    "line": 88,
+    "members": [
+     {
+      "kind": "function",
+      "name": "FGantryHandle",
+      "signature": "FGantryHandle::FGantryHandle()=default"
+     },
+     {
+      "kind": "function",
+      "name": "FGantryHandle",
+      "signature": "FGantryHandle::FGantryHandle(int32 InIndex, int32 InSerial)"
+     },
+     {
+      "kind": "function",
+      "name": "IsValid",
+      "signature": "bool FGantryHandle::IsValid() const",
+      "summary": "True when the handle addresses a slot.",
+      "description": "Says nothing about whether that slot is still live.",
+      "const": true
+     },
+     {
+      "kind": "function",
+      "name": "Reset",
+      "signature": "void FGantryHandle::Reset()"
+     },
+     {
+      "kind": "function",
+      "name": "operator==",
+      "signature": "bool FGantryHandle::operator==(const FGantryHandle &Other) const",
+      "const": true
+     },
+     {
+      "kind": "function",
+      "name": "operator!=",
+      "signature": "bool FGantryHandle::operator!=(const FGantryHandle &Other) const",
+      "const": true
+     },
+     {
+      "kind": "function",
+      "name": "ToString",
+      "signature": "FString FGantryHandle::ToString() const",
+      "summary": "\"[7:3]\" or \"[invalid]\".",
+      "const": true
+     }
+    ]
+   }
+  },
+  {
+   "id": "FGantryLoadLedger",
+   "kind": "class",
+   "module": "GantryGauge",
+   "header": "GantryGauge/Public/GantryLoadLedger.h",
+   "reflected": false,
+   "published": false,
+   "summary": "The broker every Gantry load request passes through, and the record of what happened.",
+   "cpp": {
+    "file": "GantryGauge/Public/GantryLoadLedger.h",
+    "line": 28,
+    "members": [
+     {
+      "kind": "variable",
+      "name": "OnScopeOpened",
+      "signature": "FGantryOnScopeEvent FGantryLoadLedger::OnScopeOpened"
+     },
+     {
+      "kind": "variable",
+      "name": "OnScopeProgress",
+      "signature": "FGantryOnScopeEvent FGantryLoadLedger::OnScopeProgress"
+     },
+     {
+      "kind": "variable",
+      "name": "OnScopeClosed",
+      "signature": "FGantryOnScopeEvent FGantryLoadLedger::OnScopeClosed"
+     },
+     {
+      "kind": "function",
+      "name": "FGantryLoadLedger",
+      "signature": "FGantryLoadLedger::FGantryLoadLedger()"
+     },
+     {
+      "kind": "function",
+      "name": "~FGantryLoadLedger",
+      "signature": "FGantryLoadLedger::~FGantryLoadLedger()"
+     },
+     {
+      "kind": "function",
+      "name": "FGantryLoadLedger",
+      "signature": "FGantryLoadLedger::FGantryLoadLedger(const FGantryLoadLedger &)=delete"
+     },
+     {
+      "kind": "function",
+      "name": "operator=",
+      "signature": "FGantryLoadLedger & FGantryLoadLedger::operator=(const FGantryLoadLedger &)=delete"
+     },
+     {
+      "kind": "function",
+      "name": "OpenScope",
+      "signature": "FGantryHandle FGantryLoadLedger::OpenScope(FString DebugName, FGameplayTag ReasonTag, FGantryHandle ParentHandle=FGantryHandle(), bool bUserFacing=true)",
+      "summary": "Opens a scope and returns its handle.",
+      "params": [
+       {
+        "name": "DebugName",
+        "doc": "What a human should see, e.g. \"Experience: Arena\"."
+       },
+       {
+        "name": "ReasonTag",
+        "doc": "What kind of work it is, e.g. GantryGaugeTags::Load_Scope_Experience."
+       },
+       {
+        "name": "ParentHandle",
+        "doc": "Optional parent, for nesting a stage inside an operation."
+       },
+       {
+        "name": "bUserFacing",
+        "doc": "Whether a loading bar should count this scope."
+       }
+      ]
+     },
+     {
+      "kind": "function",
+      "name": "AttachHandle",
+      "signature": "void FGantryLoadLedger::AttachHandle(FGantryHandle ScopeHandle, TSharedPtr< FStreamableHandle > StreamableHandle)",
+      "summary": "Associates a streamable handle with a scope.",
+      "description": "A scope may own several."
+     },
+     {
+      "kind": "function",
+      "name": "AddManualWork",
+      "signature": "void FGantryLoadLedger::AddManualWork(FGantryHandle ScopeHandle, int32 AdditionalRequestedCount)",
+      "summary": "Records assets that are being loaded without a streamable handle, e.g.",
+      "description": "game feature plugins or level streaming, so they still appear in the bar."
+     },
+     {
+      "kind": "function",
+      "name": "CompleteManualWork",
+      "signature": "void FGantryLoadLedger::CompleteManualWork(FGantryHandle ScopeHandle, int32 CompletedCount=1)",
+      "summary": "Reports completion of manually tracked work added with AddManualWork."
+     },
+     {
+      "kind": "function",
+      "name": "CloseScope",
+      "signature": "void FGantryLoadLedger::CloseScope(FGantryHandle ScopeHandle, EGantryLoadState FinalState=EGantryLoadState::Completed)",
+      "summary": "Closes a scope.",
+      "description": "Safe to call twice; the second call is ignored."
+     },
+     {
+      "kind": "function",
+      "name": "Poll",
+      "signature": "void FGantryLoadLedger::Poll(float DeltaSeconds)",
+      "summary": "Refreshes counts.",
+      "description": "Cheap; call once per frame. Per-asset detail is refreshed on the slower cadence from the settings."
+     },
+     {
+      "kind": "function",
+      "name": "CaptureSnapshot",
+      "signature": "FGantryLoadSnapshot FGantryLoadLedger::CaptureSnapshot() const",
+      "summary": "Copies a consistent view of every scope.",
+      "description": "Safe to hold and read at leisure.",
+      "const": true
+     },
+     {
+      "kind": "function",
+      "name": "GetScopeInfo",
+      "signature": "bool FGantryLoadLedger::GetScopeInfo(FGantryHandle ScopeHandle, FGantryLoadScopeInfo &OutInfo) const",
+      "summary": "Info for a single scope.",
+      "description": "Returns false if the handle is stale.",
+      "const": true
+     },
+     {
+      "kind": "function",
+      "name": "GetScopeAssets",
+      "signature": "bool FGantryLoadLedger::GetScopeAssets(FGantryHandle ScopeHandle, TArray< FGantryTrackedAsset > &OutAssets) const",
+      "summary": "Per-asset detail for a scope, the expensive read.",
+      "description": "Returns false if the handle is stale or detail tracking is disabled.",
+      "const": true
+     },
+     {
+      "kind": "function",
+      "name": "GetActiveScopeCount",
+      "signature": "int32 FGantryLoadLedger::GetActiveScopeCount() const",
+      "summary": "Number of scopes currently open.",
+      "const": true
+     },
+     {
+      "kind": "function",
+      "name": "ClearHistory",
+      "signature": "void FGantryLoadLedger::ClearHistory()",
+      "summary": "Clears finished-scope history.",
+      "description": "Active scopes are untouched."
+     }
+    ]
+   }
+  },
+  {
+   "id": "FGantryLoadScopeGuard",
+   "kind": "class",
+   "module": "GantryGauge",
+   "header": "GantryGauge/Public/GantryLoadScopeGuard.h",
+   "reflected": false,
+   "published": false,
+   "summary": "RAII wrapper that closes its scope when it leaves scope.",
+   "cpp": {
+    "file": "GantryGauge/Public/GantryLoadScopeGuard.h",
+    "line": 18,
+    "members": [
+     {
+      "kind": "function",
+      "name": "FGantryLoadScopeGuard",
+      "signature": "FGantryLoadScopeGuard::FGantryLoadScopeGuard(FString DebugName, FGameplayTag ReasonTag, FGantryHandle ParentHandle=FGantryHandle(), bool bUserFacing=true)",
+      "summary": "Opens a scope on the module ledger.",
+      "description": "Does nothing if the ledger is unavailable."
+     },
+     {
+      "kind": "function",
+      "name": "~FGantryLoadScopeGuard",
+      "signature": "FGantryLoadScopeGuard::~FGantryLoadScopeGuard()"
+     },
+     {
+      "kind": "function",
+      "name": "FGantryLoadScopeGuard",
+      "signature": "FGantryLoadScopeGuard::FGantryLoadScopeGuard(const FGantryLoadScopeGuard &)=delete"
+     },
+     {
+      "kind": "function",
+      "name": "operator=",
+      "signature": "FGantryLoadScopeGuard & FGantryLoadScopeGuard::operator=(const FGantryLoadScopeGuard &)=delete"
+     },
+     {
+      "kind": "function",
+      "name": "FGantryLoadScopeGuard",
+      "signature": "FGantryLoadScopeGuard::FGantryLoadScopeGuard(FGantryLoadScopeGuard &&Other)"
+     },
+     {
+      "kind": "function",
+      "name": "GetHandle",
+      "signature": "FGantryHandle FGantryLoadScopeGuard::GetHandle() const",
+      "summary": "The scope this guard owns.",
+      "const": true
+     },
+     {
+      "kind": "function",
+      "name": "AttachHandle",
+      "signature": "void FGantryLoadScopeGuard::AttachHandle(TSharedPtr< FStreamableHandle > StreamableHandle)",
+      "summary": "Attaches a streamable handle to the guarded scope."
+     },
+     {
+      "kind": "function",
+      "name": "Fail",
+      "signature": "void FGantryLoadScopeGuard::Fail()",
+      "summary": "Marks the scope failed.",
+      "description": "It still closes on destruction."
+     },
+     {
+      "kind": "function",
+      "name": "Cancel",
+      "signature": "void FGantryLoadScopeGuard::Cancel()",
+      "summary": "Marks the scope cancelled.",
+      "description": "It still closes on destruction."
+     },
+     {
+      "kind": "function",
+      "name": "Release",
+      "signature": "FGantryHandle FGantryLoadScopeGuard::Release()",
+      "summary": "Gives up ownership without closing, for handing the scope to an async continuation.",
+      "description": "The caller becomes responsible for closing it."
+     }
+    ]
+   }
+  },
+  {
+   "id": "FGantryLoadScopeInfo",
+   "kind": "struct",
+   "module": "GantryGauge",
+   "header": "GantryGauge/Public/GantryLoadingTypes.h",
+   "reflected": true,
+   "published": false,
+   "summary": "Immutable view of one scope, handed to readers.",
+   "meta": {
+    "BlueprintType": "true"
+   },
+   "properties": [
+    {
+     "name": "Handle",
+     "type": "FGantryHandle",
+     "category": "Gantry|Loading",
+     "summary": "Identifies this scope for the lifetime of its record.",
+     "default": "(Index=-1)",
+     "flags": [
+      "BlueprintVisible",
+      "BlueprintReadOnly"
+     ]
+    },
+    {
+     "name": "ParentHandle",
+     "type": "FGantryHandle",
+     "category": "Gantry|Loading",
+     "summary": "Parent scope, invalid when this is a root.",
+     "default": "(Index=-1)",
+     "flags": [
+      "BlueprintVisible",
+      "BlueprintReadOnly"
+     ]
+    },
+    {
+     "name": "DebugName",
+     "type": "FString",
+     "category": "Gantry|Loading",
+     "summary": "Human readable name, e.g.",
+     "description": "\"Experience: Arena\".",
+     "flags": [
+      "BlueprintVisible",
+      "BlueprintReadOnly"
+     ]
+    },
+    {
+     "name": "ReasonTag",
+     "type": "FGameplayTag",
+     "category": "Gantry|Loading",
+     "summary": "What kind of work this is, e.g.",
+     "description": "Gantry.Load.Scope.Experience.",
+     "default": "()",
+     "flags": [
+      "BlueprintVisible",
+      "BlueprintReadOnly"
+     ]
+    },
+    {
+     "name": "State",
+     "type": "EGantryLoadState",
+     "category": "Gantry|Loading",
+     "default": "Pending",
+     "flags": [
+      "BlueprintVisible",
+      "BlueprintReadOnly"
+     ]
+    },
+    {
+     "name": "RequestedCount",
+     "type": "int32",
+     "category": "Gantry|Loading",
+     "summary": "Assets requested across every handle attached to this scope.",
+     "default": "0",
+     "flags": [
+      "BlueprintVisible",
+      "BlueprintReadOnly"
+     ]
+    },
+    {
+     "name": "LoadedCount",
+     "type": "int32",
+     "category": "Gantry|Loading",
+     "summary": "Assets that have landed.",
+     "default": "0",
+     "flags": [
+      "BlueprintVisible",
+      "BlueprintReadOnly"
+     ]
+    },
+    {
+     "name": "ElapsedSeconds",
+     "type": "float",
+     "category": "Gantry|Loading",
+     "summary": "Seconds since the scope opened, frozen once it closes.",
+     "default": "0.000000",
+     "flags": [
+      "BlueprintVisible",
+      "BlueprintReadOnly"
+     ]
+    },
+    {
+     "name": "bUserFacing",
+     "type": "bool",
+     "category": "Gantry|Loading",
+     "summary": "True while this scope should be counted toward a user facing loading bar.",
+     "default": "True",
+     "flags": [
+      "BlueprintVisible",
+      "BlueprintReadOnly"
+     ]
+    }
+   ],
+   "cpp": {
+    "file": "GantryGauge/Public/GantryLoadingTypes.h",
+    "line": 73,
+    "members": [
+     {
+      "kind": "function",
+      "name": "GetProgress",
+      "signature": "float FGantryLoadScopeInfo::GetProgress() const",
+      "summary": "0 to 1.",
+      "description": "Returns 1 for a completed scope that requested nothing. Blueprint reaches this through UGantryLoadingLibrary; UFUNCTION is not legal in a USTRUCT.",
+      "const": true
+     },
+     {
+      "kind": "function",
+      "name": "IsFinished",
+      "signature": "bool FGantryLoadScopeInfo::IsFinished() const",
+      "summary": "True when the scope has stopped changing, whatever the outcome.",
+      "const": true
+     }
+    ]
+   }
+  },
+  {
+   "id": "FGantryLoadSnapshot",
+   "kind": "struct",
+   "module": "GantryGauge",
+   "header": "GantryGauge/Public/GantryLoadingTypes.h",
+   "reflected": true,
+   "published": false,
+   "summary": "A consistent view of everything in flight, captured under a single lock.",
+   "meta": {
+    "BlueprintType": "true"
+   },
+   "properties": [
+    {
+     "name": "ActiveScopes",
+     "type": "TArray<FGantryLoadScopeInfo>",
+     "category": "Gantry|Loading",
+     "summary": "Active scopes, oldest first.",
+     "flags": [
+      "BlueprintVisible",
+      "BlueprintReadOnly"
+     ]
+    },
+    {
+     "name": "RecentScopes",
+     "type": "TArray<FGantryLoadScopeInfo>",
+     "category": "Gantry|Loading",
+     "summary": "Recently finished scopes, newest first, capped by CompletedScopeHistorySize.",
+     "flags": [
+      "BlueprintVisible",
+      "BlueprintReadOnly"
+     ]
+    },
+    {
+     "name": "EngineAsyncPackageCount",
+     "type": "int32",
+     "category": "Gantry|Loading",
+     "summary": "Packages the engine is streaming right now, including work Gantry did not request.",
+     "description": "This is the honesty check: if this is high while ActiveScopes is empty, something is loading outside the ledger.",
+     "default": "0",
+     "flags": [
+      "BlueprintVisible",
+      "BlueprintReadOnly"
+     ]
+    },
+    {
+     "name": "CaptureTimeSeconds",
+     "type": "double",
+     "category": "Gantry|Loading",
+     "summary": "FPlatformTime::Seconds when this snapshot was taken.",
+     "default": "0.000000",
+     "flags": [
+      "BlueprintVisible",
+      "BlueprintReadOnly"
+     ]
+    }
+   ],
+   "cpp": {
+    "file": "GantryGauge/Public/GantryLoadingTypes.h",
+    "line": 134,
+    "members": [
+     {
+      "kind": "function",
+      "name": "GetOverallProgress",
+      "signature": "float FGantryLoadSnapshot::GetOverallProgress() const",
+      "summary": "Aggregate progress across user facing active scopes.",
+      "description": "1 when nothing is loading.",
+      "const": true
+     },
+     {
+      "kind": "function",
+      "name": "IsBusy",
+      "signature": "bool FGantryLoadSnapshot::IsBusy() const",
+      "summary": "True when any user facing scope is still in flight.",
+      "const": true
+     },
+     {
+      "kind": "function",
+      "name": "GetPrimaryScope",
+      "signature": "FGantryLoadScopeInfo FGantryLoadSnapshot::GetPrimaryScope() const",
+      "summary": "The scope a loading bar should name, or an empty info when nothing is in flight.",
+      "const": true
+     }
+    ]
+   }
+  },
+  {
+   "id": "FGantryStatus",
+   "kind": "struct",
+   "module": "GantryCore",
+   "header": "GantryCore/Public/Core/GantryCoreTypes.h",
+   "reflected": true,
+   "published": false,
+   "summary": "A result code plus enough context to make a log line useful.",
+   "meta": {
+    "BlueprintType": "true"
+   },
+   "properties": [
+    {
+     "name": "Result",
+     "type": "EGantryResult",
+     "category": "Gantry",
+     "default": "Success",
+     "flags": [
+      "BlueprintVisible",
+      "BlueprintReadOnly"
+     ]
+    },
+    {
+     "name": "Message",
+     "type": "FString",
+     "category": "Gantry",
+     "flags": [
+      "BlueprintVisible",
+      "BlueprintReadOnly"
+     ]
+    }
+   ],
+   "cpp": {
+    "file": "GantryCore/Public/Core/GantryCoreTypes.h",
+    "line": 44,
+    "members": [
+     {
+      "kind": "function",
+      "name": "FGantryStatus",
+      "signature": "FGantryStatus::FGantryStatus()=default"
+     },
+     {
+      "kind": "function",
+      "name": "FGantryStatus",
+      "signature": "FGantryStatus::FGantryStatus(EGantryResult InResult, FString InMessage=FString())"
+     },
+     {
+      "kind": "function",
+      "name": "IsSuccess",
+      "signature": "bool FGantryStatus::IsSuccess() const",
+      "const": true
+     },
+     {
+      "kind": "function",
+      "name": "IsPending",
+      "signature": "bool FGantryStatus::IsPending() const",
+      "const": true
+     },
+     {
+      "kind": "function",
+      "name": "IsError",
+      "signature": "bool FGantryStatus::IsError() const",
+      "const": true
+     },
+     {
+      "kind": "function",
+      "name": "ToString",
+      "signature": "FString FGantryStatus::ToString() const",
+      "summary": "\"Success\" or \"NotFound: <message>\".",
+      "const": true
+     },
+     {
+      "kind": "function",
+      "name": "Success",
+      "signature": "static FGantryStatus FGantryStatus::Success()",
+      "static": true
+     },
+     {
+      "kind": "function",
+      "name": "Pending",
+      "signature": "static FGantryStatus FGantryStatus::Pending()",
+      "static": true
+     },
+     {
+      "kind": "function",
+      "name": "Error",
+      "signature": "static FGantryStatus FGantryStatus::Error(EGantryResult InResult, FString InMessage)",
+      "static": true
+     }
+    ]
+   }
+  },
+  {
+   "id": "FGantryTrackedAsset",
+   "kind": "struct",
+   "module": "GantryGauge",
+   "header": "GantryGauge/Public/GantryLoadingTypes.h",
+   "reflected": true,
+   "published": false,
+   "summary": "One asset inside a scope, for per-asset detail.",
+   "meta": {
+    "BlueprintType": "true"
+   },
+   "properties": [
+    {
+     "name": "Path",
+     "type": "FSoftObjectPath",
+     "category": "Gantry|Loading",
+     "summary": "Soft path of the asset.",
+     "default": "None",
+     "flags": [
+      "BlueprintVisible",
+      "BlueprintReadOnly"
+     ]
+    },
+    {
+     "name": "bLoaded",
+     "type": "bool",
+     "category": "Gantry|Loading",
+     "summary": "True once the asset has resolved in memory.",
+     "default": "False",
+     "flags": [
+      "BlueprintVisible",
+      "BlueprintReadOnly"
+     ]
+    }
+   ],
+   "cpp": {
+    "file": "GantryGauge/Public/GantryLoadingTypes.h",
+    "line": 50,
+    "members": [
+     {
+      "kind": "function",
+      "name": "GetDisplayName",
+      "signature": "FString FGantryTrackedAsset::GetDisplayName() const",
+      "summary": "Short display name, the asset name without the package path.",
+      "const": true
+     }
+    ]
+   }
+  },
+  {
+   "id": "FGantryVersionRange",
+   "kind": "struct",
+   "module": "GantryExperience",
+   "header": "GantryExperience/Public/Content/GantryContentMetadata.h",
+   "reflected": true,
+   "published": false,
+   "summary": "An inclusive version window, expressed as dotted numeric strings (\"1.4.2\").",
+   "meta": {
+    "BlueprintType": "true"
+   },
+   "properties": [
+    {
+     "name": "MinVersion",
+     "type": "FString",
+     "category": "Version",
+     "summary": "Oldest game build this content works with.",
+     "description": "Empty means no lower bound.",
+     "flags": [
+      "Edit",
+      "DefaultsOnly",
+      "BlueprintVisible",
+      "BlueprintReadOnly"
+     ]
+    },
+    {
+     "name": "MaxVersion",
+     "type": "FString",
+     "category": "Version",
+     "summary": "Newest game build this content works with.",
+     "description": "Empty means no upper bound.",
+     "flags": [
+      "Edit",
+      "DefaultsOnly",
+      "BlueprintVisible",
+      "BlueprintReadOnly"
+     ]
+    }
+   ],
+   "cpp": {
+    "file": "GantryExperience/Public/Content/GantryContentMetadata.h",
+    "line": 36,
+    "members": [
+     {
+      "kind": "function",
+      "name": "IsUnbounded",
+      "signature": "bool FGantryVersionRange::IsUnbounded() const",
+      "summary": "True when both ends are empty, i.e.",
+      "description": "the content declares no opinion.",
+      "const": true
+     },
+     {
+      "kind": "function",
+      "name": "Contains",
+      "signature": "bool FGantryVersionRange::Contains(const FString &Version) const",
+      "summary": "True when Version falls inside the window.",
+      "description": "An unparseable Version fails closed.",
+      "const": true
+     },
+     {
+      "kind": "function",
+      "name": "ToString",
+      "signature": "FString FGantryVersionRange::ToString() const",
+      "summary": "Human readable, for logs and error surfaces.",
+      "const": true
+     },
+     {
+      "kind": "function",
+      "name": "Compare",
+      "signature": "static int32 FGantryVersionRange::Compare(const FString &A, const FString &B)",
+      "summary": "Component-wise numeric compare of two dotted version strings.",
+      "description": "Returns <0, 0 or >0. Missing trailing components count as zero, so \"1.2\" == \"1.2.0\".",
+      "static": true
+     }
+    ]
+   }
+  },
+  {
+   "id": "Gantry",
+   "kind": "namespace",
+   "module": "GantryCore",
+   "header": "GantryCore/Public/Core/GantryEngineVersion.h",
+   "reflected": false,
+   "published": false,
+   "cpp": {
+    "file": "GantryCore/Public/Core/GantryEngineVersion.h",
+    "line": 41,
+    "members": [
+     {
+      "kind": "function",
+      "name": "OnPostEngineInit",
+      "signature": "FSimpleMulticastDelegate & Gantry::OnPostEngineInit()",
+      "summary": "Post-engine-init delegate, through whichever accessor this engine offers."
+     }
+    ]
+   }
+  },
+  {
+   "id": "GantryCore",
+   "kind": "namespace",
+   "module": "GantryCore",
+   "header": "GantryCore/Public/Core/GantryClassSelection.h",
+   "reflected": false,
+   "published": false,
+   "summary": "The extension mechanism for every pluggable Gantry class.",
+   "cpp": {
+    "file": "GantryCore/Public/Core/GantryClassSelection.h",
+    "line": 35,
+    "members": [
+     {
+      "kind": "variable",
+      "name": "VersionMajor",
+      "signature": "int32 GantryCore::VersionMajor",
+      "constexpr": true
+     },
+     {
+      "kind": "variable",
+      "name": "VersionMinor",
+      "signature": "int32 GantryCore::VersionMinor",
+      "constexpr": true
+     },
+     {
+      "kind": "variable",
+      "name": "VersionPatch",
+      "signature": "int32 GantryCore::VersionPatch",
+      "constexpr": true
+     },
+     {
+      "kind": "function",
+      "name": "ResolveSelectedClass",
+      "signature": "UClass * GantryCore::ResolveSelectedClass(const FSoftClassPath &Configured, UClass *DefaultClass, bool bLogFailure=true)",
+      "summary": "Resolves a configured soft class path, falling back to a default.",
+      "params": [
+       {
+        "name": "Configured",
+        "doc": "Soft class path from settings. May be empty or unresolvable."
+       },
+       {
+        "name": "DefaultClass",
+        "doc": "Class to use when Configured is empty or fails to resolve."
+       },
+       {
+        "name": "bLogFailure",
+        "doc": "Log a warning when Configured is set but does not resolve."
+       }
+      ],
+      "returns": "The resolved class, never null as long as DefaultClass is not null."
+     },
+     {
+      "kind": "function",
+      "name": "IsSelectedClass",
+      "signature": "bool GantryCore::IsSelectedClass(const UClass *CandidateClass, const FSoftClassPath &Configured, UClass *DefaultClass)",
+      "summary": "Answers \"is this the one class that should exist for this hierarchy\".",
+      "description": "Call from ShouldCreateSubsystem, or anywhere else a hierarchy must produce exactly one participant.",
+      "params": [
+       {
+        "name": "CandidateClass",
+        "doc": "Usually GetClass()."
+       },
+       {
+        "name": "Configured",
+        "doc": "Soft class path from settings."
+       },
+       {
+        "name": "DefaultClass",
+        "doc": "The Gantry base, used when nothing is configured."
+       }
+      ],
+      "returns": "True only for the selected class. Abstract classes always return false."
+     },
+     {
+      "kind": "function",
+      "name": "ValidateSelectedClass",
+      "signature": "bool GantryCore::ValidateSelectedClass(const FSoftClassPath &Configured, UClass *RequiredBase, FString &OutError)",
+      "summary": "Validates that a configured class is usable for a hierarchy, logging precisely why not.",
+      "description": "Intended for startup validation and editor data validation."
+     },
+     {
+      "kind": "function",
+      "name": "GetVersionString",
+      "signature": "FString GantryCore::GetVersionString()",
+      "summary": "\"0.1.0\"."
+     }
+    ]
+   }
+  },
+  {
+   "id": "GantryCoreTags",
+   "kind": "namespace",
+   "module": "GantryCore",
+   "header": "GantryCore/Public/Tags/GantryCoreTags.h",
+   "reflected": false,
+   "published": false,
+   "summary": "Tags GantryCore declares natively.",
+   "cpp": {
+    "file": "GantryCore/Public/Tags/GantryCoreTags.h",
+    "line": 24,
+    "members": [
+     {
+      "kind": "variable",
+      "name": "InitState_Spawned",
+      "signature": "FNativeGameplayTag GantryCoreTags::InitState_Spawned",
+      "summary": "Component bring-up stages, consumed by the engine's UGameFrameworkComponentManager.",
+      "description": "Unprefixed, unlike every other tag Gantry declares. These four strings are the vocabulary the engine's modular gameplay samples established, and any third-party component written against that convention expects them by name. Relocating them under Gantry.* would fork the vocabulary and quietly break every component that did not know to follow.\n\nThey are declared here so a project does not have to redeclare them. Gantry never advances an actor through the chain itself; driving the sequence is the game's job.\n\nThe sequence exists because actor initialisation cannot be ordered in advance: a pawn spawns, its player state replicates whenever the network delivers it, and its data assets finish loading at a third unrelated moment. Rather than guessing an order, each component advances as far as its own prerequisites allow and re-evaluates whenever anything else moves."
+     },
+     {
+      "kind": "variable",
+      "name": "InitState_DataAvailable",
+      "signature": "FNativeGameplayTag GantryCoreTags::InitState_DataAvailable"
+     },
+     {
+      "kind": "variable",
+      "name": "InitState_DataInitialized",
+      "signature": "FNativeGameplayTag GantryCoreTags::InitState_DataInitialized"
+     },
+     {
+      "kind": "variable",
+      "name": "InitState_GameplayReady",
+      "signature": "FNativeGameplayTag GantryCoreTags::InitState_GameplayReady"
+     }
+    ]
+   }
+  },
+  {
+   "id": "GantryExperienceTags",
+   "kind": "namespace",
+   "module": "GantryExperience",
+   "header": "GantryExperience/Public/Tags/GantryExperienceTags.h",
+   "reflected": false,
+   "published": false,
+   "summary": "Tags Gantry Experience declares natively.",
+   "cpp": {
+    "file": "GantryExperience/Public/Tags/GantryExperienceTags.h",
+    "line": 16,
+    "members": [
+     {
+      "kind": "variable",
+      "name": "Experience_Stage_Resolve",
+      "signature": "FNativeGameplayTag GantryExperienceTags::Experience_Stage_Resolve"
+     },
+     {
+      "kind": "variable",
+      "name": "Experience_Stage_LoadAssets",
+      "signature": "FNativeGameplayTag GantryExperienceTags::Experience_Stage_LoadAssets"
+     },
+     {
+      "kind": "variable",
+      "name": "Experience_Stage_GameFeatures",
+      "signature": "FNativeGameplayTag GantryExperienceTags::Experience_Stage_GameFeatures"
+     },
+     {
+      "kind": "variable",
+      "name": "Experience_Stage_Actions",
+      "signature": "FNativeGameplayTag GantryExperienceTags::Experience_Stage_Actions"
+     },
+     {
+      "kind": "variable",
+      "name": "Experience_Stage_Finalise",
+      "signature": "FNativeGameplayTag GantryExperienceTags::Experience_Stage_Finalise"
+     }
+    ]
+   }
+  },
+  {
+   "id": "GantryGaugeTags",
+   "kind": "namespace",
+   "module": "GantryGauge",
+   "header": "GantryGauge/Public/Tags/GantryGaugeTags.h",
+   "reflected": false,
+   "published": false,
+   "summary": "Tags Gantry Gauge declares natively.",
+   "cpp": {
+    "file": "GantryGauge/Public/Tags/GantryGaugeTags.h",
+    "line": 14,
+    "members": [
+     {
+      "kind": "variable",
+      "name": "Load_Scope_Bootstrap",
+      "signature": "FNativeGameplayTag GantryGaugeTags::Load_Scope_Bootstrap"
+     },
+     {
+      "kind": "variable",
+      "name": "Load_Scope_Experience",
+      "signature": "FNativeGameplayTag GantryGaugeTags::Load_Scope_Experience"
+     },
+     {
+      "kind": "variable",
+      "name": "Load_Scope_GameFeature",
+      "signature": "FNativeGameplayTag GantryGaugeTags::Load_Scope_GameFeature"
+     },
+     {
+      "kind": "variable",
+      "name": "Load_Scope_Map",
+      "signature": "FNativeGameplayTag GantryGaugeTags::Load_Scope_Map"
+     },
+     {
+      "kind": "variable",
+      "name": "Load_Scope_Content",
+      "signature": "FNativeGameplayTag GantryGaugeTags::Load_Scope_Content"
+     },
+     {
+      "kind": "variable",
+      "name": "Load_Scope_Background",
+      "signature": "FNativeGameplayTag GantryGaugeTags::Load_Scope_Background"
+     }
+    ]
+   }
+  },
+  {
+   "id": "GantryOnExperienceReady",
+   "kind": "delegate",
+   "module": "GantryExperience",
+   "reflected": true,
+   "published": false,
+   "signature": {
+    "name": "GantryOnExperienceReady",
+    "summary": "Fired once the experience is fully live.",
+    "flags": [
+     "Multicast"
+    ],
+    "params": [
+     {
+      "name": "Experience",
+      "type": "UGantryExperienceDefinition*",
+      "direction": "in"
+     }
+    ]
+   }
+  },
+  {
+   "id": "GantryOnExperienceStageChanged",
+   "kind": "delegate",
+   "module": "GantryExperience",
+   "reflected": true,
+   "published": false,
+   "signature": {
+    "name": "GantryOnExperienceStageChanged",
+    "summary": "Fired as each stage starts, so a loading screen can name what is happening.",
+    "flags": [
+     "Multicast"
+    ],
+    "params": [
+     {
+      "name": "StageTag",
+      "type": "FGameplayTag",
+      "direction": "in"
+     },
+     {
+      "name": "StageName",
+      "type": "FString",
+      "direction": "in"
+     }
+    ]
+   }
+  },
+  {
+   "id": "GantryOnExperienceStateChanged",
+   "kind": "delegate",
+   "module": "GantryExperience",
+   "reflected": true,
+   "published": false,
+   "signature": {
+    "name": "GantryOnExperienceStateChanged",
+    "summary": "Fired on every state transition.",
+    "flags": [
+     "Multicast"
+    ],
+    "params": [
+     {
+      "name": "OldState",
+      "type": "EGantryExperienceState",
+      "direction": "in"
+     },
+     {
+      "name": "NewState",
+      "type": "EGantryExperienceState",
+      "direction": "in"
+     }
+    ]
+   }
+  },
+  {
+   "id": "GantryOnLoadScopeChanged",
+   "kind": "delegate",
+   "module": "GantryGauge",
+   "reflected": true,
+   "published": false,
+   "signature": {
+    "name": "GantryOnLoadScopeChanged",
+    "summary": "Fired when a load scope opens, progresses or closes.",
+    "flags": [
+     "Multicast"
+    ],
+    "params": [
+     {
+      "name": "Scope",
+      "type": "FGantryLoadScopeInfo",
+      "direction": "in",
+      "byRef": true
+     }
+    ]
+   }
+  },
+  {
+   "id": "GantryOnLoadingFinished",
+   "kind": "delegate",
+   "module": "GantryGauge",
+   "reflected": true,
+   "published": false,
+   "signature": {
+    "name": "GantryOnLoadingFinished",
+    "summary": "Fired when the last user facing scope closes and the game is no longer waiting on anything.",
+    "flags": [
+     "Multicast"
+    ]
+   }
+  },
+  {
+   "id": "GantryTagRegistry",
+   "kind": "namespace",
+   "module": "GantryCore",
+   "header": "GantryCore/Public/Tags/GantryTagRegistry.h",
+   "reflected": false,
+   "published": false,
+   "summary": "Registration and validation of tags a system depends on.",
+   "cpp": {
+    "file": "GantryCore/Public/Tags/GantryTagRegistry.h",
+    "line": 22,
+    "members": [
+     {
+      "kind": "function",
+      "name": "RequireTag",
+      "signature": "void GantryTagRegistry::RequireTag(FName TagName, const FString &RequiredBy, bool bExact=true)",
+      "summary": "Declares that a tag must exist.",
+      "description": "Safe to call before the tag manager has finished loading."
+     },
+     {
+      "kind": "function",
+      "name": "RequireTagRoot",
+      "signature": "void GantryTagRegistry::RequireTagRoot(FName RootTagName, const FString &RequiredBy)",
+      "summary": "Declares that every tag under a root must exist (the root itself must resolve)."
+     },
+     {
+      "kind": "function",
+      "name": "ValidateRequirements",
+      "signature": "bool GantryTagRegistry::ValidateRequirements(TArray< FString > &OutMissing)",
+      "summary": "Checks every registered requirement against the live tag tree.",
+      "params": [
+       {
+        "name": "OutMissing",
+        "doc": "Receives one line per unmet requirement."
+       }
+      ],
+      "returns": "True when every requirement is satisfied."
+     },
+     {
+      "kind": "function",
+      "name": "ValidateRequirementsAndLog",
+      "signature": "bool GantryTagRegistry::ValidateRequirementsAndLog()",
+      "summary": "Validates and logs.",
+      "description": "Returns true when everything resolved."
+     },
+     {
+      "kind": "function",
+      "name": "GetRequirements",
+      "signature": "const TArray< FTagRequirement > & GantryTagRegistry::GetRequirements()",
+      "summary": "Every requirement registered so far.",
+      "description": "Mostly for editor tooling."
+     },
+     {
+      "kind": "function",
+      "name": "ClearRequirements",
+      "signature": "void GantryTagRegistry::ClearRequirements()",
+      "summary": "Drops all requirements.",
+      "description": "Used by tests and hot reload."
+     },
+     {
+      "kind": "function",
+      "name": "ResolveTagChecked",
+      "signature": "FGameplayTag GantryTagRegistry::ResolveTagChecked(FName TagName, const TCHAR *Context)",
+      "summary": "Resolves a tag by name, logging once per distinct miss rather than every call.",
+      "description": "Use at boundaries where a tag arrives as data (an ini value, a save game, a network payload) and an empty result would otherwise be indistinguishable from \"no tag was requested\"."
+     },
+     {
+      "kind": "function",
+      "name": "GetTagsUnderRoot",
+      "signature": "FGameplayTagContainer GantryTagRegistry::GetTagsUnderRoot(FGameplayTag RootTag)",
+      "summary": "Every registered tag under a root, useful for building pickers and validators."
+     }
+    ]
+   }
+  },
+  {
+   "id": "GantryTagRegistry::FTagRequirement",
+   "kind": "struct",
+   "module": "GantryCore",
+   "header": "GantryCore/Public/Tags/GantryTagRegistry.h",
+   "reflected": false,
+   "published": false,
+   "summary": "One system's dependency on a tag existing.",
+   "cpp": {
+    "file": "GantryCore/Public/Tags/GantryTagRegistry.h",
+    "line": 25,
+    "members": [
+     {
+      "kind": "variable",
+      "name": "TagName",
+      "signature": "FName GantryTagRegistry::FTagRequirement::TagName",
+      "summary": "Tag name that must resolve, e.g.",
+      "description": "\"MyGame.Ability.Dash\"."
+     },
+     {
+      "kind": "variable",
+      "name": "RequiredBy",
+      "signature": "FString GantryTagRegistry::FTagRequirement::RequiredBy",
+      "summary": "Who needs it, used in the error message."
+     },
+     {
+      "kind": "variable",
+      "name": "bExact",
+      "signature": "bool GantryTagRegistry::FTagRequirement::bExact",
+      "summary": "True when the tag must exist exactly; false allows any registered child to satisfy it."
+     }
+    ]
+   }
+  },
+  {
+   "id": "UGantryAssetManager",
+   "kind": "class",
+   "module": "GantryGauge",
+   "header": "GantryGauge/Public/GantryAssetManager.h",
+   "reflected": true,
+   "published": false,
+   "summary": "The one door every Gantry load goes through.",
+   "super": "UAssetManager",
+   "properties": [
+    {
+     "name": "PinnedAssets",
+     "type": "TSet<TObjectPtr<UObject> >",
+     "summary": "Assets pinned by GetAsset / GetSubclass.",
+     "default": "()"
+    }
+   ],
+   "cpp": {
+    "file": "GantryGauge/Public/GantryAssetManager.h",
+    "line": 27,
+    "bases": [
+     "UAssetManager"
+    ],
+    "members": [
+     {
+      "kind": "function",
+      "name": "UGantryAssetManager",
+      "signature": "UGantryAssetManager::UGantryAssetManager()"
+     },
+     {
+      "kind": "function",
+      "name": "StartInitialLoading",
+      "signature": "virtual void UGantryAssetManager::StartInitialLoading() override"
+     },
+     {
+      "kind": "function",
+      "name": "FinishInitialLoading",
+      "signature": "virtual void UGantryAssetManager::FinishInitialLoading() override"
+     },
+     {
+      "kind": "function",
+      "name": "PostInitialAssetScan",
+      "signature": "virtual void UGantryAssetManager::PostInitialAssetScan() override"
+     },
+     {
+      "kind": "function",
+      "name": "RequestAsyncLoadTracked",
+      "signature": "TSharedPtr< FStreamableHandle > UGantryAssetManager::RequestAsyncLoadTracked(TArray< FSoftObjectPath > TargetsToStream, FString DebugName, FGameplayTag ReasonTag, FStreamableDelegate OnComplete=FStreamableDelegate(), FGantryHandle ParentScope=FGantryHandle(), bool bUserFacing=true)",
+      "summary": "Async loads a set of assets inside a named, tagged scope.",
+      "params": [
+       {
+        "name": "TargetsToStream",
+        "doc": "Assets to load."
+       },
+       {
+        "name": "DebugName",
+        "doc": "What a loading bar should call this, e.g. \"Environment\"."
+       },
+       {
+        "name": "ReasonTag",
+        "doc": "Scope kind, e.g. GantryGaugeTags::Load_Scope_Content."
+       },
+       {
+        "name": "OnComplete",
+        "doc": "Fired on the game thread once every asset has landed."
+       },
+       {
+        "name": "ParentScope",
+        "doc": "Optional parent scope, for nesting inside a larger operation."
+       },
+       {
+        "name": "bUserFacing",
+        "doc": "Whether a loading bar should count this work."
+       }
+      ],
+      "returns": "The streamable handle, or null if nothing needed loading."
+     },
+     {
+      "kind": "function",
+      "name": "LoadSynchronousTracked",
+      "signature": "UObject * UGantryAssetManager::LoadSynchronousTracked(const FSoftObjectPath &AssetPath, const TCHAR *Context)",
+      "summary": "Blocking load of a single asset, recorded and warned about.",
+      "description": "Every call is a frame hitch; the warning is the point."
+     },
+     {
+      "kind": "function",
+      "name": "PreloadPrimaryAssetsTracked",
+      "signature": "TSharedPtr< FStreamableHandle > UGantryAssetManager::PreloadPrimaryAssetsTracked(const TArray< FPrimaryAssetId > &AssetIds, const TArray< FName > &LoadBundles, FString DebugName, FGameplayTag ReasonTag, FStreamableDelegate OnComplete=FStreamableDelegate(), FGantryHandle ParentScope=FGantryHandle())",
+      "summary": "Async loads and returns immediately.",
+      "description": "Convenience wrapper over RequestAsyncLoadTracked."
+     },
+     {
+      "kind": "function",
+      "name": "AddPinnedAsset",
+      "signature": "void UGantryAssetManager::AddPinnedAsset(const UObject *Asset)",
+      "summary": "Thread safe.",
+      "description": "Pins an asset for the lifetime of the asset manager."
+     },
+     {
+      "kind": "function",
+      "name": "Get",
+      "signature": "static UGantryAssetManager & UGantryAssetManager::Get()",
+      "summary": "Typed accessor.",
+      "description": "Fatal if AssetManagerClassName is misconfigured.",
+      "static": true
+     },
+     {
+      "kind": "function",
+      "name": "GetPtr",
+      "signature": "static UGantryAssetManager * UGantryAssetManager::GetPtr()",
+      "summary": "Null-safe accessor for code that must tolerate an unconfigured asset manager.",
+      "static": true
+     },
+     {
+      "kind": "function",
+      "name": "GetAsset",
+      "signature": "AssetType * UGantryAssetManager::GetAsset(const TSoftObjectPtr< AssetType > &AssetPointer, bool bKeepInMemory=true)",
+      "summary": "Synchronously resolves a soft pointer, optionally pinning it in memory.",
+      "description": "Prefer RequestAsyncLoadTracked; this exists for the cases that genuinely cannot wait.",
+      "static": true
+     },
+     {
+      "kind": "function",
+      "name": "GetSubclass",
+      "signature": "TSubclassOf< AssetType > UGantryAssetManager::GetSubclass(const TSoftClassPtr< AssetType > &AssetPointer, bool bKeepInMemory=true)",
+      "summary": "As GetAsset, for soft class pointers.",
+      "static": true
+     },
+     {
+      "kind": "function",
+      "name": "DumpPinnedAssets",
+      "signature": "static void UGantryAssetManager::DumpPinnedAssets()",
+      "summary": "Logs every pinned asset.",
+      "description": "Backs the `Gantry.DumpPinnedAssets` console command.",
+      "static": true
+     }
+    ]
+   }
+  },
+  {
+   "id": "UGantryBaseExperienceDefinition",
+   "kind": "class",
+   "module": "GantryExperience",
+   "header": "GantryExperience/Public/Experience/GantryBaseExperienceDefinition.h",
+   "reflected": true,
+   "published": false,
+   "summary": "The one root of a project's experience tree.",
+   "super": "UGantryExperienceDefinition",
+   "meta": {
+    "BlueprintType": "true"
+   },
+   "properties": [
+    {
+     "name": "DefaultExperience",
+     "type": "TSoftObjectPtr<UGantryExperienceDefinition>",
+     "category": "Tree",
+     "summary": "Experience auto-activated when a world begins play and nothing else has set one.",
+     "description": "Optional.\n\nLives here rather than in project settings because it is a content decision: the root declares its tree, so it declares its starting leaf too. Any experience reachable from this base qualifies — a direct child or a deeper descendant; validation rejects anything the tree cannot reach, because an unreachable default is a boot into a guaranteed failure.",
+     "default": "None",
+     "flags": [
+      "Edit",
+      "DefaultsOnly",
+      "BlueprintVisible",
+      "BlueprintReadOnly"
+     ]
+    }
+   ],
+   "cpp": {
+    "file": "GantryExperience/Public/Experience/GantryBaseExperienceDefinition.h",
+    "line": 30,
+    "bases": [
+     "UGantryExperienceDefinition"
+    ],
+    "members": [
+     {
+      "kind": "function",
+      "name": "UGantryBaseExperienceDefinition",
+      "signature": "UGantryBaseExperienceDefinition::UGantryBaseExperienceDefinition()"
+     },
+     {
+      "kind": "function",
+      "name": "IsDataValid",
+      "signature": "virtual EDataValidationResult UGantryBaseExperienceDefinition::IsDataValid(class FDataValidationContext &Context) const override",
+      "const": true
+     }
+    ]
+   }
+  },
+  {
+   "id": "UGantryCoreSettings",
+   "kind": "class",
+   "module": "GantryCore",
+   "header": "GantryCore/Public/Settings/GantryCoreSettings.h",
+   "reflected": true,
+   "published": false,
+   "displayName": "Gantry Core",
+   "summary": "Shared Gantry settings, under Project Settings -> Plugins -> Gantry Core.",
+   "super": "UDeveloperSettings",
+   "flags": [
+    "Config",
+    "DefaultConfig"
+   ],
+   "configName": "Game",
+   "properties": [
+    {
+     "name": "FrameworkTagRoot",
+     "type": "FName",
+     "category": "Tags",
+     "summary": "Root tag every Gantry framework tag lives under.",
+     "description": "Exposed so a project can move Gantry's tags out of the way of its own taxonomy. Changing it after content exists requires tag redirects.",
+     "default": "Gantry",
+     "flags": [
+      "Edit",
+      "Config"
+     ]
+    },
+    {
+     "name": "bWarnOnUnregisteredTags",
+     "type": "bool",
+     "category": "Tags",
+     "summary": "Logs a warning for any tag Gantry requests that is not registered.",
+     "default": "True",
+     "flags": [
+      "Edit",
+      "Config"
+     ]
+    }
+   ],
+   "cpp": {
+    "file": "GantryCore/Public/Settings/GantryCoreSettings.h",
+    "line": 17,
+    "bases": [
+     "UDeveloperSettings"
+    ],
+    "members": [
+     {
+      "kind": "function",
+      "name": "UGantryCoreSettings",
+      "signature": "UGantryCoreSettings::UGantryCoreSettings()"
+     },
+     {
+      "kind": "function",
+      "name": "GetContainerName",
+      "signature": "virtual FName UGantryCoreSettings::GetContainerName() const override",
+      "const": true
+     },
+     {
+      "kind": "function",
+      "name": "GetCategoryName",
+      "signature": "virtual FName UGantryCoreSettings::GetCategoryName() const override",
+      "const": true
+     },
+     {
+      "kind": "function",
+      "name": "GetSectionName",
+      "signature": "virtual FName UGantryCoreSettings::GetSectionName() const override",
+      "const": true
+     },
+     {
+      "kind": "function",
+      "name": "GetSectionText",
+      "signature": "virtual FText UGantryCoreSettings::GetSectionText() const override",
+      "const": true
+     },
+     {
+      "kind": "function",
+      "name": "GetSectionDescription",
+      "signature": "virtual FText UGantryCoreSettings::GetSectionDescription() const override",
+      "const": true
+     },
+     {
+      "kind": "function",
+      "name": "ToDebugString",
+      "signature": "FString UGantryCoreSettings::ToDebugString() const",
+      "summary": "Human readable dump used by the `Gantry.Core.DumpSettings` console command.",
+      "const": true
+     },
+     {
+      "kind": "function",
+      "name": "Get",
+      "signature": "static const UGantryCoreSettings * UGantryCoreSettings::Get()",
+      "summary": "Settings are a CDO, so this never returns nullptr once the class is loaded.",
+      "static": true
+     }
+    ]
+   }
+  },
+  {
+   "id": "UGantryExperienceDefinition",
+   "kind": "class",
+   "module": "GantryExperience",
+   "header": "GantryExperience/Public/Experience/GantryExperienceDefinition.h",
+   "reflected": true,
+   "published": false,
+   "summary": "A named composite of content, activated in stages.",
+   "super": "UPrimaryDataAsset",
+   "meta": {
+    "BlueprintType": "true",
+    "IsBlueprintBase": "true"
+   },
+   "properties": [
+    {
+     "name": "ExperienceTag",
+     "type": "FGameplayTag",
+     "category": "Experience",
+     "summary": "Identifies this experience, so game code can react without a hard asset reference.",
+     "default": "()",
+     "flags": [
+      "Edit",
+      "DefaultsOnly",
+      "BlueprintVisible",
+      "BlueprintReadOnly"
+     ],
+     "meta": {
+      "Categories": "Gantry.ExperienceId"
+     }
+    },
+    {
+     "name": "ExperienceGuid",
+     "type": "FGuid",
+     "category": "Experience",
+     "summary": "Machine identity: assigned once at asset creation, regenerated on duplication, never edited.",
+     "description": "Three identities, three jobs. The asset *path* is where it lives and breaks on a move. The *tag* is the human identity — designer-authored, used by code and UI, and renameable when a taxonomy changes. The *guid* survives both, which is what save games, server verification, and mod databases need: a name for the content that no refactor can invalidate.",
+     "default": "00000000000000000000000000000000",
+     "flags": [
+      "Edit",
+      "EditConst",
+      "BlueprintVisible",
+      "BlueprintReadOnly"
+     ]
+    },
+    {
+     "name": "DisplayNameOverride",
+     "type": "FText",
+     "category": "Experience",
+     "summary": "Optional display name.",
+     "description": "Empty means \"use the asset name\".",
+     "flags": [
+      "Edit",
+      "DefaultsOnly",
+      "BlueprintVisible",
+      "BlueprintReadOnly"
+     ]
+    },
+    {
+     "name": "Description",
+     "type": "FText",
+     "category": "Experience",
+     "summary": "One or two lines for a store or selection screen.",
+     "description": "Shown even while this content is absent.",
+     "flags": [
+      "Edit",
+      "DefaultsOnly",
+      "BlueprintVisible",
+      "BlueprintReadOnly"
+     ],
+     "meta": {
+      "MultiLine": "TRUE"
+     }
+    },
+    {
+     "name": "Metadata",
+     "type": "FGantryContentMetadata",
+     "category": "Experience",
+     "summary": "Provenance and compatibility for this experience as a shipped unit.",
+     "default": "(RequiredGameVersion=(),Capabilities=())",
+     "flags": [
+      "Edit",
+      "DefaultsOnly",
+      "BlueprintVisible",
+      "BlueprintReadOnly"
+     ]
+    },
+    {
+     "name": "Stages",
+     "type": "TArray<TObjectPtr<UGantryExperienceStage> >",
+     "category": "Experience",
+     "summary": "Stages run in order during activation, and unwound in reverse on deactivation.",
+     "description": "Instanced, so each experience configures its own.",
+     "flags": [
+      "Edit",
+      "DefaultsOnly",
+      "BlueprintVisible",
+      "BlueprintReadOnly"
+     ]
+    },
+    {
+     "name": "Payload",
+     "type": "TObjectPtr<UObject>",
+     "category": "Experience",
+     "summary": "Free-form payload for the game.",
+     "description": "Gantry never reads this. It exists so a project can attach its own data object without subclassing, which is often enough and keeps the asset type count down.",
+     "default": "None",
+     "flags": [
+      "Edit",
+      "DefaultsOnly",
+      "BlueprintVisible",
+      "BlueprintReadOnly",
+      "Instanced"
+     ]
+    },
+    {
+     "name": "Children",
+     "type": "TArray<TSoftObjectPtr<UGantryExperienceDefinition> >",
+     "category": "Tree",
+     "summary": "Experiences that belong under this one.",
+     "description": "Owner side of the tree.\n\nJust the assets — everything about a child (tag, name, description, metadata) is authored on the child itself, which is the only place it makes sense to live. Each child may be listed by exactly one parent; a duplicate listing is a validation error.\n\nSoft on purpose: a listed child's content may not be mounted, and the listing must survive that. ChildSnapshots below is what keeps an absent child describable.",
+     "flags": [
+      "Edit",
+      "DefaultsOnly",
+      "BlueprintVisible",
+      "BlueprintReadOnly"
+     ]
+    },
+    {
+     "name": "ChildSnapshots",
+     "type": "TArray<FGantryExperienceEntry>",
+     "category": "Tree",
+     "summary": "Cook-time copies of each child's display data, for when the child itself is absent.",
+     "description": "Machine-written by RebuildChildSnapshots during cook, and deliberately absent from the details panel: there is no correct human interaction with a machine-maintained cache, so it offers none. Inspect it through the tree's availability queries, or a debugger.",
+     "flags": [
+      "BlueprintVisible",
+      "BlueprintReadOnly"
+     ]
+    },
+    {
+     "name": "OptionalDependencies",
+     "type": "FGameplayTagContainer",
+     "category": "Tree",
+     "summary": "Experiences this one wants but does not need.",
+     "description": "Wanter side; never gates activation.\n\nA present optional dependency joins the activation chain and is ordered before this experience. An absent one is skipped, and it is this experience's responsibility to cope — query UGantryExperienceSubsystem::IsExperienceActive and branch.",
+     "default": "()",
+     "flags": [
+      "Edit",
+      "DefaultsOnly",
+      "BlueprintVisible",
+      "BlueprintReadOnly"
+     ],
+     "meta": {
+      "EditCondition": "!bIsTreeRoot",
+      "EditConditionHides": "",
+      "Categories": "Gantry.ExperienceId"
+     }
+    },
+    {
+     "name": "AttachTo",
+     "type": "FGameplayTagContainer",
+     "category": "Tree",
+     "summary": "Required parent(s), declared by side-loaded content that no shipped asset can list.",
+     "description": "Shipped content leaves this empty and gets its parent from whoever lists it. Multiple entries are legal for side-loaded content only — the compatibility-patch pattern, \"requires A and B\" — and every named parent must resolve or this experience is an orphan.",
+     "default": "()",
+     "flags": [
+      "Edit",
+      "DefaultsOnly",
+      "BlueprintVisible",
+      "BlueprintReadOnly"
+     ],
+     "meta": {
+      "EditCondition": "!bIsTreeRoot",
+      "EditConditionHides": "",
+      "Categories": "Gantry.ExperienceId"
+     }
+    },
+    {
+     "name": "bIsTreeRoot",
+     "type": "bool",
+     "summary": "True on the tree root, which cannot have dependencies — an optional want from the root points at its own descendant (a cycle by construction) or at side-loaded content (nonsense), and an attachment contradicts being the root.",
+     "description": "Set by UGantryBaseExperienceDefinition's constructor; exists so the editor hides those fields instead of offering wrong answers.",
+     "default": "False"
+    }
+   ],
+   "functions": [
+    {
+     "name": "GetDisplayName",
+     "category": "Gantry|Experience",
+     "summary": "Name shown on loading screens.",
+     "description": "Falls back to the asset name.",
+     "flags": [
+      "BlueprintCallable",
+      "BlueprintPure",
+      "Const"
+     ],
+     "returns": {
+      "type": "FText"
+     }
+    }
+   ],
+   "cpp": {
+    "file": "GantryExperience/Public/Experience/GantryExperienceDefinition.h",
+    "line": 85,
+    "bases": [
+     "UPrimaryDataAsset"
+    ],
+    "members": [
+     {
+      "kind": "variable",
+      "name": "ExperienceTagRegistryKey",
+      "signature": "const FName UGantryExperienceDefinition::ExperienceTagRegistryKey",
+      "summary": "Registry tag name under which ExperienceTag is mirrored, for scan-without-load.",
+      "static": true
+     },
+     {
+      "kind": "variable",
+      "name": "ExperienceGuidRegistryKey",
+      "signature": "const FName UGantryExperienceDefinition::ExperienceGuidRegistryKey",
+      "summary": "Registry tag name under which ExperienceGuid is mirrored.",
+      "static": true
+     },
+     {
+      "kind": "function",
+      "name": "UGantryExperienceDefinition",
+      "signature": "UGantryExperienceDefinition::UGantryExperienceDefinition()"
+     },
+     {
+      "kind": "function",
+      "name": "GetPrimaryAssetId",
+      "signature": "virtual FPrimaryAssetId UGantryExperienceDefinition::GetPrimaryAssetId() const override",
+      "const": true
+     },
+     {
+      "kind": "function",
+      "name": "GetAssetRegistryTags",
+      "signature": "virtual void UGantryExperienceDefinition::GetAssetRegistryTags(FAssetRegistryTagsContext Context) const override",
+      "const": true
+     },
+     {
+      "kind": "function",
+      "name": "PostInitProperties",
+      "signature": "virtual void UGantryExperienceDefinition::PostInitProperties() override"
+     },
+     {
+      "kind": "function",
+      "name": "PostDuplicate",
+      "signature": "virtual void UGantryExperienceDefinition::PostDuplicate(bool bDuplicateForPIE) override"
+     },
+     {
+      "kind": "function",
+      "name": "PreSave",
+      "signature": "virtual void UGantryExperienceDefinition::PreSave(FObjectPreSaveContext ObjectSaveContext) override"
+     },
+     {
+      "kind": "function",
+      "name": "IsDataValid",
+      "signature": "virtual EDataValidationResult UGantryExperienceDefinition::IsDataValid(class FDataValidationContext &Context) const override",
+      "const": true
+     },
+     {
+      "kind": "function",
+      "name": "GetExperienceAssetType",
+      "signature": "virtual FPrimaryAssetType UGantryExperienceDefinition::GetExperienceAssetType() const",
+      "summary": "Primary asset type.",
+      "description": "Override in a subclass family to group them separately.",
+      "const": true
+     },
+     {
+      "kind": "function",
+      "name": "AppendActiveStages",
+      "signature": "void UGantryExperienceDefinition::AppendActiveStages(TArray< UGantryExperienceStage * > &OutStages) const",
+      "summary": "Appends this definition's own enabled stages, in order.",
+      "description": "Chain assembly lives in the tree.",
+      "const": true
+     },
+     {
+      "kind": "function",
+      "name": "FindChildSnapshot",
+      "signature": "const FGantryExperienceEntry * UGantryExperienceDefinition::FindChildSnapshot(const FSoftObjectPath &ChildPath) const",
+      "summary": "Snapshot row for a listed child, or null when none was cooked in.",
+      "const": true
+     },
+     {
+      "kind": "function",
+      "name": "RebuildChildSnapshots",
+      "signature": "void UGantryExperienceDefinition::RebuildChildSnapshots()",
+      "summary": "Regenerates ChildSnapshots from the loaded children.",
+      "description": "Runs during cook saves."
+     },
+     {
+      "kind": "function",
+      "name": "OwningPluginFromPath",
+      "signature": "static FString UGantryExperienceDefinition::OwningPluginFromPath(const FSoftObjectPath &Path)",
+      "summary": "Game feature plugin a package path belongs to; empty for /Game/ content.",
+      "static": true
+     }
+    ]
+   }
+  },
+  {
+   "id": "UGantryExperienceSettings",
+   "kind": "class",
+   "module": "GantryExperience",
+   "header": "GantryExperience/Public/Settings/GantryExperienceSettings.h",
+   "reflected": true,
+   "published": false,
+   "displayName": "Gantry Experience",
+   "summary": "Gantry Experience settings, under Project Settings -> Plugins -> Gantry Experience.",
+   "super": "UDeveloperSettings",
+   "flags": [
+    "Config",
+    "DefaultConfig"
+   ],
+   "configName": "Game",
+   "properties": [
+    {
+     "name": "ExperienceSubsystemClass",
+     "type": "FSoftClassPath",
+     "category": "Class Selection",
+     "summary": "Experience runtime for each world.",
+     "description": "Must derive from UGantryExperienceSubsystem. Empty uses Gantry's own.",
+     "default": "None",
+     "flags": [
+      "Edit",
+      "Config"
+     ],
+     "meta": {
+      "MetaClass": "/Script/GantryExperience.GantryExperienceSubsystem"
+     }
+    },
+    {
+     "name": "BaseExperience",
+     "type": "FSoftObjectPath",
+     "category": "Experience",
+     "summary": "The root of the project's experience tree, and its registry of record.",
+     "description": "Typed to UGantryBaseExperienceDefinition so the root cannot be mispointed — the type system is the enforcement, not validation prose. Designated by path, never found by name, because a search would eventually find Base_OLD in a shipped build.\n\nIts Children listing is what the tree crawl walks; ship it in chunk 0 so the listing stays readable when the content it describes is not installed.",
+     "default": "/Game/Experiences/EXP_Base.EXP_Base",
+     "flags": [
+      "Edit",
+      "Config"
+     ],
+     "meta": {
+      "AllowedClasses": "/Script/GantryExperience.GantryBaseExperienceDefinition"
+     }
+    },
+    {
+     "name": "ExperienceStageStallWarningTime",
+     "type": "float",
+     "category": "Experience",
+     "summary": "Seconds an experience may spend in one stage before Gantry logs a stall warning.",
+     "default": "15.000000",
+     "flags": [
+      "Edit",
+      "Config"
+     ],
+     "meta": {
+      "ClampMin": "0.0",
+      "Units": "s"
+     }
+    }
+   ],
+   "cpp": {
+    "file": "GantryExperience/Public/Settings/GantryExperienceSettings.h",
+    "line": 17,
+    "bases": [
+     "UDeveloperSettings"
+    ],
+    "members": [
+     {
+      "kind": "function",
+      "name": "UGantryExperienceSettings",
+      "signature": "UGantryExperienceSettings::UGantryExperienceSettings()"
+     },
+     {
+      "kind": "function",
+      "name": "GetContainerName",
+      "signature": "virtual FName UGantryExperienceSettings::GetContainerName() const override",
+      "const": true
+     },
+     {
+      "kind": "function",
+      "name": "GetCategoryName",
+      "signature": "virtual FName UGantryExperienceSettings::GetCategoryName() const override",
+      "const": true
+     },
+     {
+      "kind": "function",
+      "name": "GetSectionName",
+      "signature": "virtual FName UGantryExperienceSettings::GetSectionName() const override",
+      "const": true
+     },
+     {
+      "kind": "function",
+      "name": "GetSectionText",
+      "signature": "virtual FText UGantryExperienceSettings::GetSectionText() const override",
+      "const": true
+     },
+     {
+      "kind": "function",
+      "name": "GetSectionDescription",
+      "signature": "virtual FText UGantryExperienceSettings::GetSectionDescription() const override",
+      "const": true
+     },
+     {
+      "kind": "function",
+      "name": "PostEditChangeProperty",
+      "signature": "virtual void UGantryExperienceSettings::PostEditChangeProperty(FPropertyChangedEvent &PropertyChangedEvent) override"
+     },
+     {
+      "kind": "function",
+      "name": "ToDebugString",
+      "signature": "FString UGantryExperienceSettings::ToDebugString() const",
+      "summary": "Human readable dump used by the `Gantry.Experience.DumpSettings` console command.",
+      "const": true
+     },
+     {
+      "kind": "function",
+      "name": "ValidateClassSelections",
+      "signature": "bool UGantryExperienceSettings::ValidateClassSelections() const",
+      "summary": "Logs an error per misconfigured class selection.",
+      "description": "Returns false if any failed.",
+      "const": true
+     },
+     {
+      "kind": "function",
+      "name": "Get",
+      "signature": "static const UGantryExperienceSettings * UGantryExperienceSettings::Get()",
+      "summary": "Settings are a CDO, so this never returns nullptr once the class is loaded.",
+      "static": true
+     }
+    ]
+   }
+  },
+  {
+   "id": "UGantryExperienceStage",
+   "kind": "class",
+   "module": "GantryExperience",
+   "header": "GantryExperience/Public/Experience/GantryExperienceStage.h",
+   "reflected": true,
+   "published": false,
+   "summary": "One step of an experience activation.",
+   "super": "UObject",
+   "flags": [
+    "Abstract",
+    "EditInlineNew",
+    "DefaultToInstanced"
+   ],
+   "properties": [
+    {
+     "name": "bDisabled",
+     "type": "bool",
+     "category": "Stage",
+     "summary": "Skips this stage entirely.",
+     "description": "Useful for editor-only or platform-specific steps.",
+     "default": "False",
+     "flags": [
+      "Edit"
+     ]
+    }
+   ],
+   "functions": [
+    {
+     "name": "GetStageDisplayName",
+     "category": "Gantry|Experience",
+     "summary": "Name shown in progress reporting.",
+     "description": "Defaults to the class display name.",
+     "flags": [
+      "BlueprintCallable",
+      "BlueprintPure",
+      "Const"
+     ],
+     "returns": {
+      "type": "FString"
+     }
+    },
+    {
+     "name": "GetStageTag",
+     "category": "Gantry|Experience",
+     "summary": "Tag identifying the kind of work, e.g.",
+     "description": "Gantry.Experience.Stage.LoadAssets.",
+     "flags": [
+      "BlueprintCallable",
+      "BlueprintPure",
+      "Const"
+     ],
+     "returns": {
+      "type": "FGameplayTag"
+     }
+    }
+   ],
+   "cpp": {
+    "file": "GantryExperience/Public/Experience/GantryExperienceStage.h",
+    "line": 50,
+    "bases": [
+     "UObject"
+    ],
+    "members": [
+     {
+      "kind": "function",
+      "name": "BeginStage",
+      "signature": "virtual void UGantryExperienceStage::BeginStage(const FGantryExperienceStageContext &Context, FOnStageFinished OnFinished)",
+      "summary": "Starts the stage.",
+      "description": "Call FinishStage when complete, which may be immediately. The default implementation finishes successfully at once."
+     },
+     {
+      "kind": "function",
+      "name": "EndStage",
+      "signature": "virtual void UGantryExperienceStage::EndStage(const FGantryExperienceStageContext &Context)",
+      "summary": "Undoes whatever BeginStage did.",
+      "description": "Called in reverse order on deactivation."
+     },
+     {
+      "kind": "function",
+      "name": "IsRunning",
+      "signature": "bool UGantryExperienceStage::IsRunning() const",
+      "summary": "True while the stage is running.",
+      "const": true
+     }
+    ]
+   }
+  },
+  {
+   "id": "UGantryExperienceStage_GameFeatures",
+   "kind": "class",
+   "module": "GantryExperience",
+   "header": "GantryExperience/Public/Experience/GantryExperienceStage.h",
+   "reflected": true,
+   "published": false,
+   "displayName": "Activate Game Features",
+   "summary": "Loads and activates game feature plugins.",
+   "super": "UGantryExperienceStage",
+   "flags": [
+    "EditInlineNew",
+    "DefaultToInstanced"
+   ],
+   "properties": [
+    {
+     "name": "GameFeaturePluginNames",
+     "type": "TArray<FString>",
+     "category": "Stage",
+     "summary": "Plugin names, not URLs.",
+     "description": "Gantry resolves each to a URL at activation time.",
+     "flags": [
+      "Edit"
+     ]
+    },
+    {
+     "name": "bDeactivateOnEnd",
+     "type": "bool",
+     "category": "Stage",
+     "summary": "Release this stage's plugin references when the experience ends.",
+     "description": "Release, not deactivate: a plugin another experience still holds stays up. Turning this off leaks references for the lifetime of the process and is only ever right for a plugin that must outlive every experience.",
+     "default": "True",
+     "flags": [
+      "Edit"
+     ]
+    },
+    {
+     "name": "ActivatedPluginURLs",
+     "type": "TArray<FString>",
+     "summary": "Plugins this stage activated, recorded on every engine.",
+     "description": "On 5.6 / 5.7 these are the references this stage holds in Gantry's process-wide counts, and teardown releases exactly these.\n\nOn 5.8+ they back the handle. FGameFeatureStateHandle is gated behind GameFeatureStateHandle.Enabled, which the engine describes as \"a quick way for now to disable and fallback to how things are now\". If that CVar is off, InitAndRegister leaves the handle invalid and releasing it would silently free nothing, leaking every plugin an experience ever activated. So teardown falls back to direct deactivation of these URLs, unreference counted, which is the behaviour the CVar asked for.",
+     "flags": [
+      "Transient"
+     ]
+    }
+   ],
+   "cpp": {
+    "file": "GantryExperience/Public/Experience/GantryExperienceStage.h",
+    "line": 156,
+    "bases": [
+     "UGantryExperienceStage"
+    ],
+    "members": [
+     {
+      "kind": "function",
+      "name": "GetStageDisplayName",
+      "signature": "virtual FString UGantryExperienceStage_GameFeatures::GetStageDisplayName() const override",
+      "summary": "Fired by a stage when its work is done.",
+      "description": "Name shown in progress reporting. Defaults to the class display name.",
+      "const": true
+     },
+     {
+      "kind": "function",
+      "name": "GetStageTag",
+      "signature": "virtual FGameplayTag UGantryExperienceStage_GameFeatures::GetStageTag() const override",
+      "summary": "Tag identifying the kind of work, e.g.",
+      "description": "Gantry.Experience.Stage.LoadAssets.",
+      "const": true
+     },
+     {
+      "kind": "function",
+      "name": "BeginStage",
+      "signature": "virtual void UGantryExperienceStage_GameFeatures::BeginStage(const FGantryExperienceStageContext &Context, FOnStageFinished OnFinished) override",
+      "summary": "Starts the stage.",
+      "description": "Call FinishStage when complete, which may be immediately. The default implementation finishes successfully at once."
+     },
+     {
+      "kind": "function",
+      "name": "EndStage",
+      "signature": "virtual void UGantryExperienceStage_GameFeatures::EndStage(const FGantryExperienceStageContext &Context) override",
+      "summary": "Undoes whatever BeginStage did.",
+      "description": "Called in reverse order on deactivation."
+     }
+    ]
+   }
+  },
+  {
+   "id": "UGantryExperienceStage_LoadAssets",
+   "kind": "class",
+   "module": "GantryExperience",
+   "header": "GantryExperience/Public/Experience/GantryExperienceStage.h",
+   "reflected": true,
+   "published": false,
+   "displayName": "Load Assets",
+   "summary": "Loads the experience's asset list.",
+   "super": "UGantryExperienceStage",
+   "flags": [
+    "EditInlineNew",
+    "DefaultToInstanced"
+   ],
+   "properties": [
+    {
+     "name": "AssetsToLoad",
+     "type": "TArray<FSoftObjectPath>",
+     "category": "Stage",
+     "summary": "Assets to pull in before the experience is considered ready.",
+     "flags": [
+      "Edit"
+     ]
+    },
+    {
+     "name": "DisplayName",
+     "type": "FString",
+     "category": "Stage",
+     "summary": "Name shown while this stage runs, e.g.",
+     "description": "\"Environment\".",
+     "flags": [
+      "Edit"
+     ]
+    }
+   ],
+   "cpp": {
+    "file": "GantryExperience/Public/Experience/GantryExperienceStage.h",
+    "line": 110,
+    "bases": [
+     "UGantryExperienceStage"
+    ],
+    "members": [
+     {
+      "kind": "function",
+      "name": "GetStageDisplayName",
+      "signature": "virtual FString UGantryExperienceStage_LoadAssets::GetStageDisplayName() const override",
+      "summary": "Fired by a stage when its work is done.",
+      "description": "Name shown in progress reporting. Defaults to the class display name.",
+      "const": true
+     },
+     {
+      "kind": "function",
+      "name": "GetStageTag",
+      "signature": "virtual FGameplayTag UGantryExperienceStage_LoadAssets::GetStageTag() const override",
+      "summary": "Tag identifying the kind of work, e.g.",
+      "description": "Gantry.Experience.Stage.LoadAssets.",
+      "const": true
+     },
+     {
+      "kind": "function",
+      "name": "BeginStage",
+      "signature": "virtual void UGantryExperienceStage_LoadAssets::BeginStage(const FGantryExperienceStageContext &Context, FOnStageFinished OnFinished) override",
+      "summary": "Starts the stage.",
+      "description": "Call FinishStage when complete, which may be immediately. The default implementation finishes successfully at once."
+     }
+    ]
+   }
+  },
+  {
+   "id": "UGantryExperienceSubsystem",
+   "kind": "class",
+   "module": "GantryExperience",
+   "header": "GantryExperience/Public/Experience/GantryExperienceSubsystem.h",
+   "reflected": true,
+   "published": false,
+   "summary": "Runs one experience per world.",
+   "super": "UWorldSubsystem",
+   "properties": [
+    {
+     "name": "OnExperienceStateChanged",
+     "type": "FGantryOnExperienceStateChanged",
+     "category": "Gantry|Experience",
+     "summary": "Events",
+     "default": "()",
+     "flags": [
+      "BlueprintAssignable",
+      "Instanced"
+     ]
+    },
+    {
+     "name": "OnExperienceReady",
+     "type": "FGantryOnExperienceReady",
+     "category": "Gantry|Experience",
+     "default": "()",
+     "flags": [
+      "BlueprintAssignable",
+      "Instanced"
+     ]
+    },
+    {
+     "name": "OnExperienceStageChanged",
+     "type": "FGantryOnExperienceStageChanged",
+     "category": "Gantry|Experience",
+     "default": "()",
+     "flags": [
+      "BlueprintAssignable",
+      "Instanced"
+     ]
+    },
+    {
+     "name": "CurrentExperience",
+     "type": "TObjectPtr<UGantryExperienceDefinition>",
+     "summary": "The experience being activated or already live.",
+     "default": "None",
+     "flags": [
+      "Transient"
+     ]
+    },
+    {
+     "name": "ActiveStages",
+     "type": "TArray<TObjectPtr<UGantryExperienceStage> >",
+     "summary": "Flattened stage list for the current run.",
+     "flags": [
+      "Transient"
+     ]
+    },
+    {
+     "name": "OutgoingStages",
+     "type": "TArray<TObjectPtr<UGantryExperienceStage> >",
+     "summary": "Stages of the experience being replaced, held until the incoming one is ready.",
+     "flags": [
+      "Transient"
+     ]
+    },
+    {
+     "name": "OutgoingExperience",
+     "type": "TObjectPtr<UGantryExperienceDefinition>",
+     "summary": "The experience OutgoingStages belong to, needed to build their teardown context.",
+     "default": "None",
+     "flags": [
+      "Transient"
+     ]
+    }
+   ],
+   "functions": [
+    {
+     "name": "ClearExperience",
+     "category": "Gantry|Experience",
+     "summary": "Tears down the current experience, unwinding stages in reverse.",
+     "flags": [
+      "BlueprintCallable"
+     ]
+    },
+    {
+     "name": "Get",
+     "category": "Gantry|Experience",
+     "summary": "Typed accessor from any object with a world.",
+     "flags": [
+      "BlueprintCallable",
+      "BlueprintPure",
+      "Static"
+     ],
+     "params": [
+      {
+       "name": "WorldContextObject",
+       "type": "UObject*",
+       "direction": "in"
+      }
+     ],
+     "returns": {
+      "type": "UGantryExperienceSubsystem*"
+     },
+     "meta": {
+      "WorldContext": "WorldContextObject"
+     }
+    },
+    {
+     "name": "GetActiveExperienceTags",
+     "category": "Gantry|Experience",
+     "summary": "Tags of every experience in the current activation chain: the leaf, its required ancestry, and whichever optional dependencies were present.",
+     "description": "This is the query half of the optional-dependency contract. A dependent that declared an optional want copes with absence by asking here and branching — no asset reference to content that may not exist.",
+     "flags": [
+      "BlueprintCallable",
+      "BlueprintPure",
+      "Const"
+     ],
+     "returns": {
+      "type": "FGameplayTagContainer"
+     }
+    },
+    {
+     "name": "GetCurrentExperience",
+     "category": "Gantry|Experience",
+     "summary": "The active experience, or null if none is loaded.",
+     "flags": [
+      "BlueprintCallable",
+      "BlueprintPure",
+      "Const"
+     ],
+     "returns": {
+      "type": "UGantryExperienceDefinition*"
+     }
+    },
+    {
+     "name": "GetCurrentStageName",
+     "category": "Gantry|Experience",
+     "summary": "Name of the stage currently running, for a loading screen.",
+     "description": "Empty when idle.",
+     "flags": [
+      "BlueprintCallable",
+      "BlueprintPure",
+      "Const"
+     ],
+     "returns": {
+      "type": "FString"
+     }
+    },
+    {
+     "name": "GetExperienceAvailability",
+     "category": "Gantry|Experience",
+     "summary": "Availability of one experience, with a player-showable reason when not Available.",
+     "flags": [
+      "BlueprintCallable"
+     ],
+     "params": [
+      {
+       "name": "ExperienceTag",
+       "type": "FGameplayTag",
+       "direction": "in"
+      },
+      {
+       "name": "OutReason",
+       "type": "FString",
+       "direction": "out"
+      }
+     ],
+     "returns": {
+      "type": "EGantryExperienceAvailability"
+     }
+    },
+    {
+     "name": "GetExperienceState",
+     "category": "Gantry|Experience",
+     "summary": "Queries",
+     "flags": [
+      "BlueprintCallable",
+      "BlueprintPure",
+      "Const"
+     ],
+     "returns": {
+      "type": "EGantryExperienceState"
+     }
+    },
+    {
+     "name": "GetKnownExperienceTags",
+     "category": "Gantry|Experience",
+     "summary": "Every experience the tree knows about, installed or not.",
+     "description": "Builds the tree if needed.",
+     "flags": [
+      "BlueprintCallable"
+     ],
+     "params": [
+      {
+       "name": "OutTags",
+       "type": "FGameplayTagContainer",
+       "direction": "out"
+      }
+     ]
+    },
+    {
+     "name": "GetStageProgress",
+     "category": "Gantry|Experience",
+     "summary": "Stage index and total, for \"step 2 of 5\" reporting.",
+     "flags": [
+      "BlueprintCallable",
+      "BlueprintPure",
+      "Const"
+     ],
+     "params": [
+      {
+       "name": "OutCurrentStage",
+       "type": "int32",
+       "direction": "out"
+      },
+      {
+       "name": "OutTotalStages",
+       "type": "int32",
+       "direction": "out"
+      }
+     ]
+    },
+    {
+     "name": "InvalidateExperienceTree",
+     "category": "Gantry|Experience",
+     "summary": "Discards the crawled tree so the next activation re-crawls.",
+     "description": "Call after mounting or unmounting content mid-session. Deliberately does not touch a live chain: newly mounted content participates at the next activation, never by hot-grafting into a running experience.",
+     "flags": [
+      "BlueprintCallable"
+     ]
+    },
+    {
+     "name": "IsExperienceActive",
+     "category": "Gantry|Experience",
+     "summary": "True if the tagged experience is part of the live chain.",
+     "flags": [
+      "BlueprintCallable",
+      "BlueprintPure",
+      "Const"
+     ],
+     "params": [
+      {
+       "name": "ExperienceTag",
+       "type": "FGameplayTag",
+       "direction": "in"
+      }
+     ],
+     "returns": {
+      "type": "bool"
+     }
+    },
+    {
+     "name": "IsExperienceReady",
+     "category": "Gantry|Experience",
+     "flags": [
+      "BlueprintCallable",
+      "BlueprintPure",
+      "Const"
+     ],
+     "returns": {
+      "type": "bool"
+     }
+    },
+    {
+     "name": "RunCurrentStage",
+     "summary": "Runs the stage at CurrentStageIndex.",
+     "description": "Split out from AdvanceStage so the Gantry.Experience.StageDelay development aid has something to schedule; without the split there is no seam to insert a timer into."
+    },
+    {
+     "name": "SetExperience",
+     "category": "Gantry|Experience",
+     "summary": "Asset-pointer convenience over SetExperienceByTag, for callers holding a reference.",
+     "flags": [
+      "BlueprintCallable"
+     ],
+     "params": [
+      {
+       "name": "ExperienceToLoad",
+       "type": "TSoftObjectPtr<UGantryExperienceDefinition>",
+       "direction": "in"
+      }
+     ]
+    },
+    {
+     "name": "SetExperienceByTag",
+     "category": "Gantry|Experience",
+     "summary": "Activates an experience by identity, replacing any current one.",
+     "description": "The tag is resolved through the crawled tree: the leaf's required chain plus its present optional dependencies, ordered shallow to deep. An experience the tree does not know cannot activate — being listed (or being side-loaded content whose attachment resolves) is what makes activation possible. Asynchronous; listen on OnExperienceReady.",
+     "flags": [
+      "BlueprintCallable"
+     ],
+     "params": [
+      {
+       "name": "ExperienceTag",
+       "type": "FGameplayTag",
+       "direction": "in"
+      }
+     ]
+    }
+   ],
+   "cpp": {
+    "file": "GantryExperience/Public/Experience/GantryExperienceSubsystem.h",
+    "line": 38,
+    "bases": [
+     "UWorldSubsystem"
+    ],
+    "members": [
+     {
+      "kind": "variable",
+      "name": "OnExperienceReadyNative_HighPriority",
+      "signature": "FGantryOnExperienceReadyNative UGantryExperienceSubsystem::OnExperienceReadyNative_HighPriority",
+      "summary": "Native counterparts of OnExperienceReady, one per tier.",
+      "description": "Prefer the CallOrRegister accessors, which close the race where an experience finishes before a listener binds."
+     },
+     {
+      "kind": "variable",
+      "name": "OnExperienceReadyNative",
+      "signature": "FGantryOnExperienceReadyNative UGantryExperienceSubsystem::OnExperienceReadyNative"
+     },
+     {
+      "kind": "variable",
+      "name": "OnExperienceReadyNative_LowPriority",
+      "signature": "FGantryOnExperienceReadyNative UGantryExperienceSubsystem::OnExperienceReadyNative_LowPriority"
+     },
+     {
+      "kind": "function",
+      "name": "ShouldCreateSubsystem",
+      "signature": "virtual bool UGantryExperienceSubsystem::ShouldCreateSubsystem(UObject *Outer) const override",
+      "const": true
+     },
+     {
+      "kind": "function",
+      "name": "Initialize",
+      "signature": "virtual void UGantryExperienceSubsystem::Initialize(FSubsystemCollectionBase &Collection) override"
+     },
+     {
+      "kind": "function",
+      "name": "Deinitialize",
+      "signature": "virtual void UGantryExperienceSubsystem::Deinitialize() override"
+     },
+     {
+      "kind": "function",
+      "name": "DoesSupportWorldType",
+      "signature": "virtual bool UGantryExperienceSubsystem::DoesSupportWorldType(const EWorldType::Type WorldType) const override",
+      "const": true
+     },
+     {
+      "kind": "function",
+      "name": "OnWorldBeginPlay",
+      "signature": "virtual void UGantryExperienceSubsystem::OnWorldBeginPlay(UWorld &InWorld) override"
+     },
+     {
+      "kind": "function",
+      "name": "GetExperienceTree",
+      "signature": "const FGantryExperienceTree * UGantryExperienceSubsystem::GetExperienceTree() const",
+      "summary": "Read access to the crawled tree for advanced callers.",
+      "description": "Null until first built.",
+      "const": true
+     },
+     {
+      "kind": "function",
+      "name": "CallOrRegister_OnExperienceReady_HighPriority",
+      "signature": "void UGantryExperienceSubsystem::CallOrRegister_OnExperienceReady_HighPriority(FGantryOnExperienceReadyNative::FDelegate &&Delegate)",
+      "summary": "Runs a callback once the experience is ready, immediately if it already is.",
+      "description": "This is the accessor game code should use. Binding OnExperienceReady directly races: if the experience finished before you bound, your callback never fires."
+     },
+     {
+      "kind": "function",
+      "name": "CallOrRegister_OnExperienceReady",
+      "signature": "void UGantryExperienceSubsystem::CallOrRegister_OnExperienceReady(FGantryOnExperienceReadyNative::FDelegate &&Delegate)",
+      "summary": "Normal tier.",
+      "description": "See CallOrRegister_OnExperienceReady_HighPriority."
+     },
+     {
+      "kind": "function",
+      "name": "CallOrRegister_OnExperienceReady_LowPriority",
+      "signature": "void UGantryExperienceSubsystem::CallOrRegister_OnExperienceReady_LowPriority(FGantryOnExperienceReadyNative::FDelegate &&Delegate)",
+      "summary": "Low tier, fired last.",
+      "description": "See CallOrRegister_OnExperienceReady_HighPriority."
+     }
+    ]
+   }
+  },
+  {
+   "id": "UGantryGameFeatureAction",
+   "kind": "class",
+   "module": "GantryExperience",
+   "header": "GantryExperience/Public/GameFeatures/GantryGameFeatureAction.h",
+   "reflected": true,
+   "published": false,
+   "summary": "Base class for game feature actions that Gantry can see.",
+   "super": "UGameFeatureAction",
+   "flags": [
+    "Abstract",
+    "EditInlineNew",
+    "DefaultToInstanced"
+   ],
+   "cpp": {
+    "file": "GantryExperience/Public/GameFeatures/GantryGameFeatureAction.h",
+    "line": 81,
+    "bases": [
+     "UGameFeatureAction"
+    ],
+    "members": [
+     {
+      "kind": "function",
+      "name": "OnGameFeatureActivating",
+      "signature": "virtual void UGantryGameFeatureAction::OnGameFeatureActivating(FGameFeatureActivatingContext &Context) override final"
+     },
+     {
+      "kind": "function",
+      "name": "OnGameFeatureDeactivating",
+      "signature": "virtual void UGantryGameFeatureAction::OnGameFeatureDeactivating(FGameFeatureDeactivatingContext &Context) override"
+     },
+     {
+      "kind": "function",
+      "name": "GetActionDisplayName",
+      "signature": "virtual FString UGantryGameFeatureAction::GetActionDisplayName() const",
+      "summary": "Name shown in load progress.",
+      "description": "Defaults to the class display name.",
+      "const": true
+     }
+    ]
+   }
+  },
+  {
+   "id": "UGantryGameFeatureData",
+   "kind": "class",
+   "module": "GantryExperience",
+   "header": "GantryExperience/Public/GameFeatures/GantryGameFeatureData.h",
+   "reflected": true,
+   "published": false,
+   "summary": "Game feature data carrying Gantry's shipped-unit provenance.",
+   "super": "UGameFeatureData",
+   "properties": [
+    {
+     "name": "Metadata",
+     "type": "FGantryContentMetadata",
+     "category": "Gantry",
+     "summary": "Provenance and compatibility for the plugin this data asset belongs to.",
+     "default": "(RequiredGameVersion=(),Capabilities=())",
+     "flags": [
+      "Edit",
+      "DefaultsOnly",
+      "BlueprintVisible",
+      "BlueprintReadOnly"
+     ]
+    }
+   ],
+   "cpp": {
+    "file": "GantryExperience/Public/GameFeatures/GantryGameFeatureData.h",
+    "line": 31,
+    "bases": [
+     "UGameFeatureData"
+    ],
+    "members": [
+     {
+      "kind": "function",
+      "name": "GetAssetRegistryTags",
+      "signature": "virtual void UGantryGameFeatureData::GetAssetRegistryTags(FAssetRegistryTagsContext Context) const override",
+      "const": true
+     },
+     {
+      "kind": "function",
+      "name": "PreSave",
+      "signature": "virtual void UGantryGameFeatureData::PreSave(FObjectPreSaveContext ObjectSaveContext) override"
+     }
+    ]
+   }
+  },
+  {
+   "id": "UGantryGameFeaturesProjectPolicies",
+   "kind": "class",
+   "module": "GantryExperience",
+   "header": "GantryExperience/Public/GameFeatures/GantryGameFeaturesProjectPolicies.h",
+   "reflected": true,
+   "published": false,
+   "summary": "Gantry's game feature policy, and the single place compatibility is enforced.",
+   "super": "UDefaultGameFeaturesProjectPolicies",
+   "flags": [
+    "Config"
+   ],
+   "configName": "Game",
+   "properties": [
+    {
+     "name": "bEnforceCompatibility",
+     "type": "bool",
+     "category": "Gantry",
+     "summary": "Refuse plugins whose metadata does not match this build.",
+     "description": "Exposed as a switch because during development the answer is often \"let it through and warn\", whereas a shipped build wants the refusal. Defaults to enforcing.",
+     "default": "True",
+     "flags": [
+      "Edit",
+      "Config"
+     ]
+    }
+   ],
+   "cpp": {
+    "file": "GantryExperience/Public/GameFeatures/GantryGameFeaturesProjectPolicies.h",
+    "line": 31,
+    "bases": [
+     "UDefaultGameFeaturesProjectPolicies"
+    ],
+    "members": [
+     {
+      "kind": "function",
+      "name": "InitGameFeatureManager",
+      "signature": "virtual void UGantryGameFeaturesProjectPolicies::InitGameFeatureManager() override"
+     },
+     {
+      "kind": "function",
+      "name": "IsPluginAllowed",
+      "signature": "virtual bool UGantryGameFeaturesProjectPolicies::IsPluginAllowed(const FString &PluginURL, FString *OutReason) const override",
+      "const": true
+     },
+     {
+      "kind": "function",
+      "name": "CheckPluginCompatibility",
+      "signature": "EGantryCompatibility UGantryGameFeaturesProjectPolicies::CheckPluginCompatibility(const FString &PluginName, FString &OutReason) const",
+      "summary": "Checks a plugin's shipped-unit metadata without mounting it.",
+      "description": "Reads the asset registry tags written by UGantryGameFeatureData, so this is answerable for a plugin that is merely known rather than installed. A plugin with no Gantry metadata is allowed: plenty of legitimate plugins predate this, and refusing them would be a policy about their authorship rather than their compatibility.",
+      "const": true
+     }
+    ]
+   }
+  },
+  {
+   "id": "UGantryGaugeEditorSettings",
+   "kind": "class",
+   "module": "GantryGaugeEditor",
+   "header": "GantryGaugeEditor/Public/GantryGaugeEditorSettings.h",
+   "reflected": true,
+   "published": false,
+   "displayName": "Gantry Gauge",
+   "summary": "Per-user preferences for Gantry's editor tooling.",
+   "super": "UDeveloperSettings",
+   "flags": [
+    "Config"
+   ],
+   "configName": "EditorPerProjectUserSettings",
+   "properties": [
+    {
+     "name": "bDumpLoadingOnPIEEnd",
+     "type": "bool",
+     "category": "Diagnostics",
+     "summary": "Logs the load ledger contents when a PIE session ends.",
+     "default": "False",
+     "flags": [
+      "Edit",
+      "Config"
+     ]
+    },
+    {
+     "name": "bWarnOnOpenScopesAtPIEEnd",
+     "type": "bool",
+     "category": "Diagnostics",
+     "summary": "Warns when a PIE session ends with load scopes still open.",
+     "default": "True",
+     "flags": [
+      "Edit",
+      "Config"
+     ]
+    }
+   ],
+   "cpp": {
+    "file": "GantryGaugeEditor/Public/GantryGaugeEditorSettings.h",
+    "line": 16,
+    "bases": [
+     "UDeveloperSettings"
+    ],
+    "members": [
+     {
+      "kind": "function",
+      "name": "UGantryGaugeEditorSettings",
+      "signature": "UGantryGaugeEditorSettings::UGantryGaugeEditorSettings()"
+     },
+     {
+      "kind": "function",
+      "name": "GetContainerName",
+      "signature": "virtual FName UGantryGaugeEditorSettings::GetContainerName() const override",
+      "const": true
+     },
+     {
+      "kind": "function",
+      "name": "GetCategoryName",
+      "signature": "virtual FName UGantryGaugeEditorSettings::GetCategoryName() const override",
+      "const": true
+     },
+     {
+      "kind": "function",
+      "name": "GetSectionName",
+      "signature": "virtual FName UGantryGaugeEditorSettings::GetSectionName() const override",
+      "const": true
+     },
+     {
+      "kind": "function",
+      "name": "GetSectionText",
+      "signature": "virtual FText UGantryGaugeEditorSettings::GetSectionText() const override",
+      "const": true
+     },
+     {
+      "kind": "function",
+      "name": "GetSectionDescription",
+      "signature": "virtual FText UGantryGaugeEditorSettings::GetSectionDescription() const override",
+      "const": true
+     },
+     {
+      "kind": "function",
+      "name": "Get",
+      "signature": "static const UGantryGaugeEditorSettings * UGantryGaugeEditorSettings::Get()",
+      "static": true
+     }
+    ]
+   }
+  },
+  {
+   "id": "UGantryGaugeEditorSubsystem",
+   "kind": "class",
+   "module": "GantryGaugeEditor",
+   "header": "GantryGaugeEditor/Public/GantryGaugeEditorSubsystem.h",
+   "reflected": true,
+   "published": false,
+   "summary": "Editor-scope subsystem for Gantry tooling.",
+   "super": "UEditorSubsystem",
+   "cpp": {
+    "file": "GantryGaugeEditor/Public/GantryGaugeEditorSubsystem.h",
+    "line": 16,
+    "bases": [
+     "UEditorSubsystem"
+    ],
+    "members": [
+     {
+      "kind": "function",
+      "name": "Initialize",
+      "signature": "virtual void UGantryGaugeEditorSubsystem::Initialize(FSubsystemCollectionBase &Collection) override"
+     },
+     {
+      "kind": "function",
+      "name": "Deinitialize",
+      "signature": "virtual void UGantryGaugeEditorSubsystem::Deinitialize() override"
+     },
+     {
+      "kind": "function",
+      "name": "Get",
+      "signature": "static UGantryGaugeEditorSubsystem * UGantryGaugeEditorSubsystem::Get()",
+      "static": true
+     }
+    ]
+   }
+  },
+  {
+   "id": "UGantryGaugeSettings",
+   "kind": "class",
+   "module": "GantryGauge",
+   "header": "GantryGauge/Public/Settings/GantryGaugeSettings.h",
+   "reflected": true,
+   "published": false,
+   "displayName": "Gantry Gauge",
+   "summary": "Gantry Gauge settings, under Project Settings -> Plugins -> Gantry Gauge.",
+   "super": "UDeveloperSettings",
+   "flags": [
+    "Config",
+    "DefaultConfig"
+   ],
+   "configName": "Game",
+   "properties": [
+    {
+     "name": "StreamingSubsystemClass",
+     "type": "FSoftClassPath",
+     "category": "Class Selection",
+     "summary": "Streaming instrumentation subsystem.",
+     "description": "Must derive from UGantryStreamingSubsystem. Empty uses Gantry's own.",
+     "default": "None",
+     "flags": [
+      "Edit",
+      "Config"
+     ],
+     "meta": {
+      "MetaClass": "/Script/GantryGauge.GantryStreamingSubsystem"
+     }
+    },
+    {
+     "name": "bEnableLoadLedger",
+     "type": "bool",
+     "category": "Loading",
+     "summary": "Master switch for the load ledger.",
+     "description": "Off means zero tracking overhead.",
+     "default": "True",
+     "flags": [
+      "Edit",
+      "Config"
+     ]
+    },
+    {
+     "name": "bTrackIndividualAssets",
+     "type": "bool",
+     "category": "Loading",
+     "summary": "Record every individual asset path per scope, not just aggregate counts.",
+     "description": "This is what lets a loading bar name the asset it is on. It costs one FSoftObjectPath per tracked asset, so it is worth turning off in Shipping if a bar only needs percentages.",
+     "default": "True",
+     "flags": [
+      "Edit",
+      "Config"
+     ]
+    },
+    {
+     "name": "LoadDetailPollInterval",
+     "type": "float",
+     "category": "Loading",
+     "summary": "Seconds between per-asset detail refreshes.",
+     "description": "Aggregate counts update every poll and are nearly free. Resolving which specific assets have landed is O(assets in scope), so it runs on this slower cadence. Zero means every poll.",
+     "default": "0.100000",
+     "flags": [
+      "Edit",
+      "Config"
+     ],
+     "meta": {
+      "ClampMin": "0.0",
+      "ClampMax": "1.0",
+      "Units": "s"
+     }
+    },
+    {
+     "name": "CompletedScopeHistorySize",
+     "type": "int32",
+     "category": "Loading",
+     "summary": "Completed scopes kept for inspection before being retired.",
+     "description": "Zero keeps none.",
+     "default": "64",
+     "flags": [
+      "Edit",
+      "Config"
+     ],
+     "meta": {
+      "ClampMin": "0",
+      "ClampMax": "512"
+     }
+    },
+    {
+     "name": "bWarnOnBlockingLoads",
+     "type": "bool",
+     "category": "Loading",
+     "summary": "Warns when a synchronous load happens outside of startup.",
+     "description": "Every one is a frame hitch.",
+     "default": "True",
+     "flags": [
+      "Edit",
+      "Config"
+     ]
+    }
+   ],
+   "cpp": {
+    "file": "GantryGauge/Public/Settings/GantryGaugeSettings.h",
+    "line": 19,
+    "bases": [
+     "UDeveloperSettings"
+    ],
+    "members": [
+     {
+      "kind": "function",
+      "name": "UGantryGaugeSettings",
+      "signature": "UGantryGaugeSettings::UGantryGaugeSettings()"
+     },
+     {
+      "kind": "function",
+      "name": "GetContainerName",
+      "signature": "virtual FName UGantryGaugeSettings::GetContainerName() const override",
+      "const": true
+     },
+     {
+      "kind": "function",
+      "name": "GetCategoryName",
+      "signature": "virtual FName UGantryGaugeSettings::GetCategoryName() const override",
+      "const": true
+     },
+     {
+      "kind": "function",
+      "name": "GetSectionName",
+      "signature": "virtual FName UGantryGaugeSettings::GetSectionName() const override",
+      "const": true
+     },
+     {
+      "kind": "function",
+      "name": "GetSectionText",
+      "signature": "virtual FText UGantryGaugeSettings::GetSectionText() const override",
+      "const": true
+     },
+     {
+      "kind": "function",
+      "name": "GetSectionDescription",
+      "signature": "virtual FText UGantryGaugeSettings::GetSectionDescription() const override",
+      "const": true
+     },
+     {
+      "kind": "function",
+      "name": "PostEditChangeProperty",
+      "signature": "virtual void UGantryGaugeSettings::PostEditChangeProperty(FPropertyChangedEvent &PropertyChangedEvent) override"
+     },
+     {
+      "kind": "function",
+      "name": "ToDebugString",
+      "signature": "FString UGantryGaugeSettings::ToDebugString() const",
+      "summary": "Human readable dump used by the `Gantry.Gauge.DumpSettings` console command.",
+      "const": true
+     },
+     {
+      "kind": "function",
+      "name": "ValidateClassSelections",
+      "signature": "bool UGantryGaugeSettings::ValidateClassSelections() const",
+      "summary": "Logs an error per misconfigured class selection.",
+      "description": "Returns false if any failed.",
+      "const": true
+     },
+     {
+      "kind": "function",
+      "name": "Get",
+      "signature": "static const UGantryGaugeSettings * UGantryGaugeSettings::Get()",
+      "summary": "Settings are a CDO, so this never returns nullptr once the class is loaded.",
+      "static": true
+     }
+    ]
+   }
+  },
+  {
+   "id": "UGantryLoadingLibrary",
+   "kind": "class",
+   "module": "GantryGauge",
+   "header": "GantryGauge/Public/GantryLoadingLibrary.h",
+   "reflected": true,
+   "published": false,
+   "summary": "Blueprint access to the loading value types.",
+   "super": "UBlueprintFunctionLibrary",
+   "functions": [
+    {
+     "name": "GetScopeProgress",
+     "category": "Gantry|Loading",
+     "summary": "0 to 1 progress for one scope.",
+     "flags": [
+      "BlueprintCallable",
+      "BlueprintPure",
+      "Static"
+     ],
+     "params": [
+      {
+       "name": "Scope",
+       "type": "FGantryLoadScopeInfo",
+       "direction": "in",
+       "byRef": true
+      }
+     ],
+     "returns": {
+      "type": "float"
+     }
+    },
+    {
+     "name": "GetSnapshotPrimaryScope",
+     "category": "Gantry|Loading",
+     "summary": "The scope a loading bar should be naming.",
+     "flags": [
+      "BlueprintCallable",
+      "BlueprintPure",
+      "Static"
+     ],
+     "params": [
+      {
+       "name": "Snapshot",
+       "type": "FGantryLoadSnapshot",
+       "direction": "in",
+       "byRef": true
+      }
+     ],
+     "returns": {
+      "type": "FGantryLoadScopeInfo"
+     }
+    },
+    {
+     "name": "GetSnapshotProgress",
+     "category": "Gantry|Loading",
+     "summary": "Aggregate progress across every user facing scope in the snapshot.",
+     "flags": [
+      "BlueprintCallable",
+      "BlueprintPure",
+      "Static"
+     ],
+     "params": [
+      {
+       "name": "Snapshot",
+       "type": "FGantryLoadSnapshot",
+       "direction": "in",
+       "byRef": true
+      }
+     ],
+     "returns": {
+      "type": "float"
+     }
+    },
+    {
+     "name": "GetTrackedAssetDisplayName",
+     "category": "Gantry|Loading",
+     "summary": "Short display name for a tracked asset, without the package path.",
+     "flags": [
+      "BlueprintCallable",
+      "BlueprintPure",
+      "Static"
+     ],
+     "params": [
+      {
+       "name": "Asset",
+       "type": "FGantryTrackedAsset",
+       "direction": "in",
+       "byRef": true
+      }
+     ],
+     "returns": {
+      "type": "FString"
+     }
+    },
+    {
+     "name": "IsHandleValid",
+     "category": "Gantry",
+     "summary": "True when a handle addresses a slot.",
+     "description": "Says nothing about whether that slot is still live.",
+     "flags": [
+      "BlueprintCallable",
+      "BlueprintPure",
+      "Static"
+     ],
+     "params": [
+      {
+       "name": "Handle",
+       "type": "FGantryHandle",
+       "direction": "in",
+       "byRef": true
+      }
+     ],
+     "returns": {
+      "type": "bool"
+     }
+    },
+    {
+     "name": "IsScopeFinished",
+     "category": "Gantry|Loading",
+     "summary": "True when the scope has stopped changing, whatever the outcome.",
+     "flags": [
+      "BlueprintCallable",
+      "BlueprintPure",
+      "Static"
+     ],
+     "params": [
+      {
+       "name": "Scope",
+       "type": "FGantryLoadScopeInfo",
+       "direction": "in",
+       "byRef": true
+      }
+     ],
+     "returns": {
+      "type": "bool"
+     }
+    },
+    {
+     "name": "IsSnapshotBusy",
+     "category": "Gantry|Loading",
+     "summary": "True while the player is waiting on something.",
+     "flags": [
+      "BlueprintCallable",
+      "BlueprintPure",
+      "Static"
+     ],
+     "params": [
+      {
+       "name": "Snapshot",
+       "type": "FGantryLoadSnapshot",
+       "direction": "in",
+       "byRef": true
+      }
+     ],
+     "returns": {
+      "type": "bool"
+     }
+    }
+   ],
+   "cpp": {
+    "file": "GantryGauge/Public/GantryLoadingLibrary.h",
+    "line": 19,
+    "bases": [
+     "UBlueprintFunctionLibrary"
+    ]
+   }
+  },
+  {
+   "id": "UGantryLoadingScreenWidget",
+   "kind": "class",
+   "module": "GantryGaugeUI",
+   "header": "GantryGaugeUI/Public/GantryLoadingScreenWidget.h",
+   "reflected": true,
+   "published": false,
+   "summary": "Base widget for a Gantry loading screen.",
+   "super": "UUserWidget",
+   "flags": [
+    "Abstract",
+    "EditInlineNew",
+    "DefaultToInstanced"
+   ],
+   "meta": {
+    "BlueprintType": "true",
+    "IsBlueprintBase": "true"
+   },
+   "properties": [
+    {
+     "name": "RefreshInterval",
+     "type": "float",
+     "category": "Gantry|Loading Screen",
+     "summary": "Seconds between refreshes.",
+     "description": "Zero refreshes every tick.",
+     "default": "0.050000",
+     "flags": [
+      "Edit",
+      "BlueprintVisible"
+     ],
+     "meta": {
+      "ClampMin": "0.0",
+      "Units": "s"
+     }
+    },
+    {
+     "name": "bShowAssetDetail",
+     "type": "bool",
+     "category": "Gantry|Loading Screen",
+     "summary": "Collect outstanding asset names.",
+     "description": "Costs a per-asset read; leave off unless displayed.",
+     "default": "False",
+     "flags": [
+      "Edit",
+      "BlueprintVisible"
+     ]
+    },
+    {
+     "name": "MaxAssetNamesShown",
+     "type": "int32",
+     "category": "Gantry|Loading Screen",
+     "summary": "Maximum asset names collected per refresh.",
+     "default": "5",
+     "flags": [
+      "Edit",
+      "BlueprintVisible"
+     ],
+     "meta": {
+      "ClampMin": "1",
+      "ClampMax": "32"
+     }
+    },
+    {
+     "name": "ProgressInterpolationSpeed",
+     "type": "float",
+     "category": "Gantry|Loading Screen",
+     "summary": "Smoothing applied to the bar, so it eases rather than snapping between chunks.",
+     "default": "8.000000",
+     "flags": [
+      "Edit",
+      "BlueprintVisible"
+     ],
+     "meta": {
+      "ClampMin": "0.0",
+      "ClampMax": "30.0"
+     }
+    }
+   ],
+   "functions": [
+    {
+     "name": "GetCountText",
+     "category": "Gantry|Loading Screen",
+     "summary": "\"12 / 40\" for the current scope, or empty when nothing is loading.",
+     "flags": [
+      "BlueprintCallable",
+      "BlueprintPure",
+      "Const"
+     ],
+     "returns": {
+      "type": "FText"
+     }
+    },
+    {
+     "name": "GetPendingAssetNames",
+     "category": "Gantry|Loading Screen",
+     "summary": "Names of assets still outstanding in the current scope, newest first.",
+     "description": "Empty unless bShowAssetDetail and GantryCore's bTrackIndividualAssets are both on.",
+     "flags": [
+      "BlueprintCallable",
+      "BlueprintPure",
+      "Const"
+     ],
+     "returns": {
+      "type": "TArray<FText>"
+     }
+    },
+    {
+     "name": "GetPrimaryScope",
+     "category": "Gantry|Loading Screen",
+     "summary": "The scope currently being reported.",
+     "flags": [
+      "BlueprintCallable",
+      "BlueprintPure",
+      "Const"
+     ],
+     "returns": {
+      "type": "FGantryLoadScopeInfo"
+     }
+    },
+    {
+     "name": "GetProgress",
+     "category": "Gantry|Loading Screen",
+     "summary": "Aggregate 0 to 1 progress across everything the player is waiting on.",
+     "flags": [
+      "BlueprintCallable",
+      "BlueprintPure",
+      "Const"
+     ],
+     "returns": {
+      "type": "float"
+     }
+    },
+    {
+     "name": "GetStatusText",
+     "category": "Gantry|Loading Screen",
+     "summary": "Name of the scope holding things up, e.g.",
+     "description": "\"Environment\".",
+     "flags": [
+      "BlueprintCallable",
+      "BlueprintPure",
+      "Const"
+     ],
+     "returns": {
+      "type": "FText"
+     }
+    },
+    {
+     "name": "IsLoading",
+     "category": "Gantry|Loading Screen",
+     "summary": "True while the player is actually waiting on something.",
+     "flags": [
+      "BlueprintCallable",
+      "BlueprintPure",
+      "Const"
+     ],
+     "returns": {
+      "type": "bool"
+     }
+    },
+    {
+     "name": "K2_OnLoadingFinished",
+     "displayName": "On Loading Finished",
+     "category": "Gantry|Loading Screen",
+     "summary": "Called once when the last thing the player was waiting on finishes.",
+     "flags": [
+      "BlueprintImplementableEvent"
+     ]
+    },
+    {
+     "name": "K2_OnProgressUpdated",
+     "displayName": "On Progress Updated",
+     "category": "Gantry|Loading Screen",
+     "summary": "Called after each refresh, for Blueprint-side animation.",
+     "flags": [
+      "BlueprintImplementableEvent"
+     ],
+     "params": [
+      {
+       "name": "Progress",
+       "type": "float",
+       "direction": "in"
+      },
+      {
+       "name": "StatusText",
+       "type": "FText",
+       "direction": "in",
+       "byRef": true
+      }
+     ]
+    }
+   ],
+   "cpp": {
+    "file": "GantryGaugeUI/Public/GantryLoadingScreenWidget.h",
+    "line": 23,
+    "bases": [
+     "UUserWidget"
+    ],
+    "members": [
+     {
+      "kind": "function",
+      "name": "NativeConstruct",
+      "signature": "virtual void UGantryLoadingScreenWidget::NativeConstruct() override"
+     },
+     {
+      "kind": "function",
+      "name": "NativeDestruct",
+      "signature": "virtual void UGantryLoadingScreenWidget::NativeDestruct() override"
+     },
+     {
+      "kind": "function",
+      "name": "NativeTick",
+      "signature": "virtual void UGantryLoadingScreenWidget::NativeTick(const FGeometry &MyGeometry, float InDeltaTime) override"
+     }
+    ]
+   }
+  },
+  {
+   "id": "UGantryStreamingSubsystem",
+   "kind": "class",
+   "module": "GantryGauge",
+   "header": "GantryGauge/Public/GantryStreamingSubsystem.h",
+   "reflected": true,
+   "published": false,
+   "summary": "The public face of Gantry's streaming instrumentation.",
+   "super": "UEngineSubsystem",
+   "properties": [
+    {
+     "name": "OnScopeOpened",
+     "type": "FGantryOnLoadScopeChanged",
+     "category": "Gantry|Loading",
+     "summary": "Events",
+     "default": "()",
+     "flags": [
+      "BlueprintAssignable",
+      "Instanced"
+     ]
+    },
+    {
+     "name": "OnScopeProgress",
+     "type": "FGantryOnLoadScopeChanged",
+     "category": "Gantry|Loading",
+     "default": "()",
+     "flags": [
+      "BlueprintAssignable",
+      "Instanced"
+     ]
+    },
+    {
+     "name": "OnScopeClosed",
+     "type": "FGantryOnLoadScopeChanged",
+     "category": "Gantry|Loading",
+     "default": "()",
+     "flags": [
+      "BlueprintAssignable",
+      "Instanced"
+     ]
+    },
+    {
+     "name": "OnLoadingFinished",
+     "type": "FGantryOnLoadingFinished",
+     "category": "Gantry|Loading",
+     "default": "()",
+     "flags": [
+      "BlueprintAssignable",
+      "Instanced"
+     ]
+    }
+   ],
+   "functions": [
+    {
+     "name": "DumpToLog",
+     "category": "Gantry|Loading",
+     "summary": "Logs the current snapshot.",
+     "description": "Backs `Gantry.DumpLoading`.",
+     "flags": [
+      "BlueprintCallable"
+     ]
+    },
+    {
+     "name": "GetOverallProgress",
+     "category": "Gantry|Loading",
+     "summary": "Aggregate 0 to 1 progress across user facing scopes.",
+     "flags": [
+      "BlueprintCallable",
+      "BlueprintPure"
+     ],
+     "returns": {
+      "type": "float"
+     }
+    },
+    {
+     "name": "GetPrimaryScope",
+     "category": "Gantry|Loading",
+     "summary": "The scope a loading bar should be naming right now.",
+     "flags": [
+      "BlueprintCallable",
+      "BlueprintPure"
+     ],
+     "returns": {
+      "type": "FGantryLoadScopeInfo"
+     }
+    },
+    {
+     "name": "GetScopeAssets",
+     "category": "Gantry|Loading",
+     "summary": "Per-asset detail for one scope, the expensive read.",
+     "description": "Requires bTrackIndividualAssets. Returns false for a stale handle.",
+     "flags": [
+      "BlueprintCallable"
+     ],
+     "params": [
+      {
+       "name": "ScopeHandle",
+       "type": "FGantryHandle",
+       "direction": "in"
+      },
+      {
+       "name": "OutAssets",
+       "type": "TArray<FGantryTrackedAsset>",
+       "direction": "out"
+      }
+     ],
+     "returns": {
+      "type": "bool"
+     }
+    },
+    {
+     "name": "GetSnapshot",
+     "category": "Gantry|Loading",
+     "summary": "A consistent view of everything in flight.",
+     "description": "Cached per frame, so calling this from several widgets in one frame costs one capture.",
+     "flags": [
+      "BlueprintCallable"
+     ],
+     "returns": {
+      "type": "FGantryLoadSnapshot"
+     }
+    },
+    {
+     "name": "IsLoading",
+     "category": "Gantry|Loading",
+     "summary": "True while any user facing scope is in flight.",
+     "flags": [
+      "BlueprintCallable",
+      "BlueprintPure"
+     ],
+     "returns": {
+      "type": "bool"
+     }
+    }
+   ],
+   "cpp": {
+    "file": "GantryGauge/Public/GantryStreamingSubsystem.h",
+    "line": 41,
+    "bases": [
+     "UEngineSubsystem"
+    ],
+    "members": [
+     {
+      "kind": "function",
+      "name": "ShouldCreateSubsystem",
+      "signature": "virtual bool UGantryStreamingSubsystem::ShouldCreateSubsystem(UObject *Outer) const override",
+      "const": true
+     },
+     {
+      "kind": "function",
+      "name": "Initialize",
+      "signature": "virtual void UGantryStreamingSubsystem::Initialize(FSubsystemCollectionBase &Collection) override"
+     },
+     {
+      "kind": "function",
+      "name": "Deinitialize",
+      "signature": "virtual void UGantryStreamingSubsystem::Deinitialize() override"
+     },
+     {
+      "kind": "function",
+      "name": "Get",
+      "signature": "static UGantryStreamingSubsystem * UGantryStreamingSubsystem::Get()",
+      "summary": "Typed accessor.",
+      "description": "Null before engine init and after shutdown.",
+      "static": true
+     }
+    ]
+   }
+  }
+ ],
+ "extensions": {}
+}
